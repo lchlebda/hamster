@@ -1,0 +1,15 @@
+version: "3"
+services:
+  backend:
+    image: hamster-mw
+    build: backend
+    ports:
+      - "8080:8080"
+
+  frontend:
+    image: hamster-fe
+    build: frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
