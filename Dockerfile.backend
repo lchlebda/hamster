@@ -1,3 +1,3 @@
 FROM openjdk:17-jdk-alpine
-COPY ./backend/target/*.jar /hamster.jar
+COPY ./*.jar /hamster.jar
 ENTRYPOINT ["java","-jar","/hamster.jar"]
