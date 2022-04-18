@@ -2,13 +2,24 @@ import { Component } from "react";
 import logo from './logo.svg';
 import './App.css';
 
+export type Activity = {
+  id: number;
+  name: string;
+  distance: number;
+}
+
 class App extends Component {
   state = {
-    activities: []
+    activities: [] as Activity[],
+    authorized: false,
   };
 
   async componentDidMount() {
-    const response = await fetch('/activities');
+    const response = await fetch('/activities', {
+      headers: {
+        'ACCESS_TOKEN': '625aa1aba055b8f0cfe9347665d1d28667b22e82',
+      }
+    });
     const body = await response.json();
     this.setState({ activities: body });
   }
@@ -23,7 +34,7 @@ class App extends Component {
               <h2>Activities</h2>
               { activities.map(activity =>
                   <div key={ activity.id }>
-                    { activity.name } | { activity.time } | { activity.regenerationTime }
+                    { activity.name } | { activity.distance }
                   </div>
               )}
             </div>
