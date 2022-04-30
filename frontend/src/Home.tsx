@@ -29,7 +29,7 @@ const App: FC = (): ReactElement => {
         <header className='App-header'>
           <div className='App-intro'>
             <h2>Activities</h2>
-            {activities && activities.map(activity =>
+            {activities?.map(activity =>
                 <div key={activity.id}>
                   {activity.name} | {activity.distance}
                 </div>
