@@ -24,7 +24,7 @@ export const useAuth = () => {
     return React.useContext(AuthContext);
 }
 
-function AuthProvider({ children }: { children: React.ReactNode }) {
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     let [user, setUser] = React.useState<any>(null);
 
     let signIn = (newUser: string, callback: VoidFunction) => {

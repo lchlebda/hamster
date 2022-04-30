@@ -1,7 +1,7 @@
 import { useAuth } from './AuthProvider';
 import { useNavigate } from 'react-router-dom';
 
-function AuthStatus() {
+const AuthStatus = () => {
     let auth = useAuth();
     let navigate = useNavigate();
 
