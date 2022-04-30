@@ -1,7 +1,8 @@
 import AuthStatus from './authorization/AuthStatus';
 import { Link, Outlet } from 'react-router-dom';
+import { FC, ReactElement } from 'react';
 
-function Layout() {
+const Layout: FC = (): ReactElement =>  {
     return (
         <div>
             <AuthStatus />
