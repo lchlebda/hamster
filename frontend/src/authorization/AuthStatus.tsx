@@ -11,7 +11,7 @@ const AuthStatus = () => {
 
     return (
         <p>
-            Welcome {auth.user}!{" "}
+            Welcome { auth.user }!{ " " } Your token is { auth.token }
             <button
                 onClick={() => {
                     auth.signOut(() => navigate("/"));

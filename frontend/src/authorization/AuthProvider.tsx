@@ -2,6 +2,7 @@ import React from 'react';
 
 interface AuthContextType {
     user: any;
+    token: string;
     signIn: (user: string, callback: VoidFunction) => void;
     signOut: (callback: VoidFunction) => void;
 }
@@ -10,9 +11,10 @@ const AuthContext = React.createContext<AuthContextType>(null!);
 
 const fakeAuthProvider = {
     isAuthenticated: false,
-    signIn(callback: VoidFunction) {
+    signIn(callback: VoidFunction): string {
         fakeAuthProvider.isAuthenticated = true;
         setTimeout(callback, 100); // fake async
+        return 'abcdef';
     },
     signOut(callback: VoidFunction) {
         fakeAuthProvider.isAuthenticated = false;
@@ -25,23 +27,25 @@ export const useAuth = () => {
 }
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    let [user, setUser] = React.useState<any>(null);
+    const [user, setUser] = React.useState<any>(null);
+    const [token, setToken] = React.useState<any>(null);
 
-    let signIn = (newUser: string, callback: VoidFunction) => {
-        return fakeAuthProvider.signIn(() => {
+    const signIn = (newUser: string, callback: VoidFunction) => {
+        const token = fakeAuthProvider.signIn(() => {
             setUser(newUser);
             callback();
         });
+        setToken(token);
     };
 
-    let signOut = (callback: VoidFunction) => {
+    const signOut = (callback: VoidFunction) => {
         return fakeAuthProvider.signOut(() => {
             setUser(null);
             callback();
         });
     };
 
-    let value = { user, signIn, signOut };
+    const value = { user, token, signIn, signOut };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,4 +1,4 @@
-import { FC, ReactElement, useState } from "react";
+import {FC, ReactElement, useEffect, useState} from "react";
 import logo from './logo.svg';
 import './App.css';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
@@ -8,26 +8,40 @@ const Login: FC = (): ReactElement => {
 
     const [clientId, setClientId] = useState<string | ''>();
     const [clientSecret, setClientSecret] = useState<string | ''>();
+    const [accessToken, setAccessToken] = useState<string | null>();
     const navigate = useNavigate();
     const location: Location & {state: any} = useLocation();
     const auth = useAuth();
     const from = location.state?.from?.pathname || "/";
 
+    useEffect(() => {
+        const code = new URLSearchParams(window.location.search).get('code');
+       // setAccessToken(code);
+        // const response = await fetch('/activities', {
+        //   headers: {
+        //     'ACCESS_TOKEN': code as string,
+        //   }
+        // });
+        // const body = await response.json();
+        // this.setState({ activities: body });
+        console.log(code);
+    }, []);
+
     const handleLogin = (): void => {
-        auth.signIn('lchlebda', () => {
-            // Send them back to the page they tried to visit when they were
-            // redirected to the login page. Use { replace: true } so we don't create
-            // another entry in the history stack for the login page.  This means that
-            // when they get to the protected page and click the back button, they
-            // won't end up back on the login page, which is also really nice for the
-            // user experience.
-            navigate(from, { replace: true });
-        });
-        // window.location.href =
-        //     `https://www.strava.com/oauth/authorize?client_id=${clientId}` +
-        //     '&response_type=code' +
-        //     '&scope=activity:read' +
-        //     `&redirect_uri=http://localhost:3000/login?client_secret=${clientSecret}`;
+        // auth.signIn('lchlebda', () => {
+        //     // Send them back to the page they tried to visit when they were
+        //     // redirected to the login page. Use { replace: true } so we don't create
+        //     // another entry in the history stack for the login page.  This means that
+        //     // when they get to the protected page and click the back button, they
+        //     // won't end up back on the login page, which is also really nice for the
+        //     // user experience.
+        //     navigate(from, { replace: true });
+        // });
+        window.location.href =
+            `https://www.strava.com/oauth/authorize?client_id=${clientId}` +
+            '&response_type=code' +
+            '&scope=activity:read' +
+            `&redirect_uri=http://localhost:3000/login?client_secret=${clientSecret}`;
     }
 
     return (
