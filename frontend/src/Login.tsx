@@ -8,14 +8,32 @@ const Login: FC = (): ReactElement => {
 
     const [clientId, setClientId] = useState<string | ''>();
     const [clientSecret, setClientSecret] = useState<string | ''>();
-    const [accessToken, setAccessToken] = useState<string | null>();
+    const [accessToken, setAccessToken] = useState<string | ''>();
     const navigate = useNavigate();
     const location: Location & {state: any} = useLocation();
     const auth = useAuth();
     const from = location.state?.from?.pathname || "/";
 
     useEffect(() => {
-        const code = new URLSearchParams(window.location.search).get('code');
+        const urlParams = new URLSearchParams(window.location.search.replace('amp;amp;', ''));
+        const code = urlParams.get('code');
+        const clientId = urlParams.get('client_id');
+        const clientSecret = urlParams.get('client_secret');
+        if (!code || !clientId || !clientSecret) {
+            return;
+        }
+        (async () => {
+            const response = await fetch('/strava/oauth?' + new URLSearchParams({
+                code: code as string,
+                clientId: clientId as string,
+                clientSecret: clientSecret as string,
+            }));
+            const token = await response.text();
+            setAccessToken(token);
+        })();
+        // auth.signIn('lchlebda', () => {
+        //     navigate(from, { replace: true });
+        // });
        // setAccessToken(code);
         // const response = await fetch('/activities', {
         //   headers: {
@@ -24,7 +42,6 @@ const Login: FC = (): ReactElement => {
         // });
         // const body = await response.json();
         // this.setState({ activities: body });
-        console.log(code);
     }, []);
 
     const handleLogin = (): void => {
@@ -41,7 +58,7 @@ const Login: FC = (): ReactElement => {
             `https://www.strava.com/oauth/authorize?client_id=${clientId}` +
             '&response_type=code' +
             '&scope=activity:read' +
-            `&redirect_uri=http://localhost:3000/login?client_secret=${clientSecret}`;
+            `&redirect_uri=`+encodeURIComponent(`http://localhost:3000/login?client_secret=${clientSecret}&client_id=${clientId}`);
     }
 
     return (

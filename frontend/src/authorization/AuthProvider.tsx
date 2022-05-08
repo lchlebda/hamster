@@ -9,15 +9,15 @@ interface AuthContextType {
 
 const AuthContext = React.createContext<AuthContextType>(null!);
 
-const fakeAuthProvider = {
+const StravaAuthProvider = {
     isAuthenticated: false,
     signIn(callback: VoidFunction): string {
-        fakeAuthProvider.isAuthenticated = true;
+        StravaAuthProvider.isAuthenticated = true;
         setTimeout(callback, 100); // fake async
         return 'abcdef';
     },
     signOut(callback: VoidFunction) {
-        fakeAuthProvider.isAuthenticated = false;
+        StravaAuthProvider.isAuthenticated = false;
         setTimeout(callback, 100);
     },
 };
@@ -31,7 +31,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [token, setToken] = React.useState<any>(null);
 
     const signIn = (newUser: string, callback: VoidFunction) => {
-        const token = fakeAuthProvider.signIn(() => {
+        const token = StravaAuthProvider.signIn(() => {
             setUser(newUser);
             callback();
         });
@@ -39,7 +39,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const signOut = (callback: VoidFunction) => {
-        return fakeAuthProvider.signOut(() => {
+        return StravaAuthProvider.signOut(() => {
             setUser(null);
             callback();
         });
