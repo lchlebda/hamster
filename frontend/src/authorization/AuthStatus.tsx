@@ -5,7 +5,7 @@ const AuthStatus = () => {
     let auth = useAuth();
     let navigate = useNavigate();
 
-    if (!auth.user) {
+    if (!auth.user || !auth.token) {
         return <p>You are not logged in.</p>;
     }
 

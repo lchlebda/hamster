@@ -8,7 +8,6 @@ const Login: FC = (): ReactElement => {
 
     const [clientId, setClientId] = useState<string | ''>();
     const [clientSecret, setClientSecret] = useState<string | ''>();
-    const [accessToken, setAccessToken] = useState<string | ''>();
     const navigate = useNavigate();
     const location: Location & {state: any} = useLocation();
     const auth = useAuth();
@@ -22,38 +21,18 @@ const Login: FC = (): ReactElement => {
         if (!code || !clientId || !clientSecret) {
             return;
         }
-        (async () => {
-            const response = await fetch('/strava/oauth?' + new URLSearchParams({
-                code: code as string,
-                clientId: clientId as string,
-                clientSecret: clientSecret as string,
-            }));
-            const token = await response.text();
-            setAccessToken(token);
-        })();
-        // auth.signIn('lchlebda', () => {
-        //     navigate(from, { replace: true });
-        // });
-       // setAccessToken(code);
-        // const response = await fetch('/activities', {
-        //   headers: {
-        //     'ACCESS_TOKEN': code as string,
-        //   }
-        // });
-        // const body = await response.json();
-        // this.setState({ activities: body });
+        auth.signIn('lchlebda',
+                    () => navigate(from, { replace: true }),
+                    () => {
+                          return fetch('/strava/oauth?' + new URLSearchParams({
+                                code: code as string,
+                                clientId: clientId as string,
+                                clientSecret: clientSecret as string }));
+                          }
+                    );
     }, []);
 
     const handleLogin = (): void => {
-        // auth.signIn('lchlebda', () => {
-        //     // Send them back to the page they tried to visit when they were
-        //     // redirected to the login page. Use { replace: true } so we don't create
-        //     // another entry in the history stack for the login page.  This means that
-        //     // when they get to the protected page and click the back button, they
-        //     // won't end up back on the login page, which is also really nice for the
-        //     // user experience.
-        //     navigate(from, { replace: true });
-        // });
         window.location.href =
             `https://www.strava.com/oauth/authorize?client_id=${clientId}` +
             '&response_type=code' +
