@@ -2,8 +2,8 @@ import { useAuth } from './AuthProvider';
 import { useNavigate } from 'react-router-dom';
 
 const AuthStatus = () => {
-    let auth = useAuth();
-    let navigate = useNavigate();
+    const auth = useAuth();
+    const navigate = useNavigate();
 
     if (!auth.user || !auth.token) {
         return <p>You are not logged in.</p>;

@@ -1,5 +1,4 @@
-import {FC, ReactElement, useEffect, useState} from "react";
-import logo from './logo.svg';
+import { FC, ReactElement, useEffect, useState } from 'react';
 import './App.css';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './authorization/AuthProvider';

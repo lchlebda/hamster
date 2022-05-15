@@ -1,4 +1,4 @@
-import { FC, ReactElement, useState } from "react";
+import { FC, ReactElement, useState } from 'react';
 import './App.css';
 
 export type Activity = {
