@@ -6,13 +6,7 @@ const Layout: FC = (): ReactElement =>  {
     return (
         <div>
             <AuthStatus />
-
-            <ul>
-                <li>
-                    <Link to="/">Home</Link>
-                </li>
-            </ul>
-
+            <Link to="/">Home</Link>
             <Outlet />
         </div>
     );

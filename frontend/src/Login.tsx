@@ -3,11 +3,13 @@ import logo from './logo.svg';
 import './App.css';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './authorization/AuthProvider';
+import { Spinner } from 'react-bootstrap';
 
 const Login: FC = (): ReactElement => {
 
     const [clientId, setClientId] = useState<string | ''>();
     const [clientSecret, setClientSecret] = useState<string | ''>();
+    const [loading, setLoading] = useState<boolean>(false);
     const navigate = useNavigate();
     const location: Location & {state: any} = useLocation();
     const auth = useAuth();
@@ -21,6 +23,7 @@ const Login: FC = (): ReactElement => {
         if (!code || !clientId || !clientSecret) {
             return;
         }
+        setLoading(true);
         auth.signIn('lchlebda',
                     () => navigate(from, { replace: true }),
                     () => {
@@ -41,30 +44,32 @@ const Login: FC = (): ReactElement => {
     }
 
     return (
-        <div className='App'>
-            <h1>Welcome to Hamster App!</h1>
-            <header className='App-header'>
-                <img src={ logo } className='App-logo' alt='logo'/>
-                <div className='App-intro'>
-                    <h2>Please login with your client data:</h2>
+        <>
+        { loading ? <div className='login-spinner-div'><Spinner animation={"border"} variant={"primary"}
+                                              style={{ width: '5rem', height: '5rem'}} /></div> :
+                <div className='App'>
+                    <div className='App-intro'>
+                        <h2>Please login with your client data:</h2>
+                    </div>
+                    <div>
+                        <label>
+                            Client id:
+                            <input type="number" value={clientId} onChange={event => setClientId(event.target.value)}/>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Client secret:
+                            <input type="text" value={clientSecret}
+                                   onChange={event => setClientSecret(event.target.value)}/>
+                        </label>
+                    </div>
+                    <div>
+                        <input type="button" value="Login" onClick={handleLogin}/>
+                    </div>
                 </div>
-                <div>
-                    <label>
-                        Client id:
-                        <input type="number" value={ clientId } onChange={ event => setClientId(event.target.value) }/>
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Client secret:
-                        <input type="text" value={ clientSecret } onChange={ event => setClientSecret(event.target.value) }/>
-                    </label>
-                </div>
-                <div>
-                    <input type="button" value="Login" onClick={ handleLogin }/>
-                </div>
-            </header>
-        </div>
+        }
+        </>
     );
 }
 export default Login;

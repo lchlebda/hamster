@@ -26,7 +26,8 @@ const App: FC = (): ReactElement => {
 
   return (
       <div className='App'>
-        <header className='App-header'>
+          <h1>Welcome to Hamster App!</h1>
+          <header className='App-header'>
           <div className='App-intro'>
             <h2>Activities</h2>
             {activities?.map(activity =>
