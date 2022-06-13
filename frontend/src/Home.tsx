@@ -1,5 +1,7 @@
-import { FC, ReactElement, useState } from 'react';
+import { FC, ReactElement, useEffect, useState } from 'react';
 import './App.css';
+import { useAuth } from './authorization/AuthProvider';
+import { ActivitiesService } from './services';
 
 export type Activity = {
   id: number;
@@ -9,20 +11,22 @@ export type Activity = {
 
 const App: FC = (): ReactElement => {
 
-  const [accessToken, setAccessToken] = useState<string | ''>();
   const [activities, setActivities] = useState<Activity[] | []>();
+  const auth = useAuth();
 
-  // async componentDidMount() {
-    // const code = new URLSearchParams(window.location.search).get('code');
-    // this.setState({ accessToken: code });
-    // const response = await fetch('/activities', {
-    //   headers: {
-    //     'ACCESS_TOKEN': code as string,
-    //   }
-    // });
-    // const body = await response.json();
-    // this.setState({ activities: body });
-  // }
+  useEffect((): void => {
+      function getActivities(): Promise<Activity[]> {
+          try {
+              return ActivitiesService.getActivities(auth.token);
+          } catch (e) {
+              return Promise.any([]);
+          }
+      }
+
+      getActivities().then((body) =>  {
+          setActivities(body);
+      })
+  }, []);
 
   return (
       <div className='App'>

@@ -19,7 +19,7 @@ public class ActivitiesController {
 
     @GetMapping
     public List<StravaActivity> getActivities(@RequestHeader(name = "ACCESS_TOKEN") String accessToken) {
-       // return List.of(new Activity(10L, "Skitury", 180, 10), new Activity(20L, "Siłownia", 90, 100));
+//        return List.of(new StravaActivity(10L, "Skitury", 180), new StravaActivity(20L, "Siłownia", 90));
         return stravaActivitiesRepository.getList(accessToken);
     }
 }
