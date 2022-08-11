@@ -6,8 +6,8 @@ import { Spinner } from 'react-bootstrap';
 
 const Login: FC = (): ReactElement => {
 
-    const [clientId, setClientId] = useState<string | ''>();
-    const [clientSecret, setClientSecret] = useState<string | ''>();
+    const [clientId, setClientId] = useState<string | ''>('74001');
+    const [clientSecret, setClientSecret] = useState<string | ''>('f6cd43178a104002c63442870561330229a0bbfe');
     const [loading, setLoading] = useState<boolean>(false);
     const navigate = useNavigate();
     const location: Location & {state: any} = useLocation();
@@ -53,7 +53,7 @@ const Login: FC = (): ReactElement => {
                     <div>
                         <label>
                             Client id:
-                            <input type="number" value={clientId} onChange={event => setClientId(event.target.value)}/>
+                            <input type="text" value={clientId} onChange={event => setClientId(event.target.value)}/>
                         </label>
                     </div>
                     <div>
