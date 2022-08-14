@@ -48,7 +48,7 @@ const App: FC = (): ReactElement => {
           <h1>Welcome to Hamster App!</h1>
           <header className='App-header'>
           <div>
-              <Table striped bordered hover>
+              <Table striped bordered hover size='sm'>
                   <thead>
                   <tr>
                       <th>Date</th>
