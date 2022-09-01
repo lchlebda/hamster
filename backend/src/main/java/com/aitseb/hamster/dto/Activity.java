@@ -17,9 +17,9 @@ public record Activity(long id,
                        float ef,
                        float tss,
                        float effort,
-                       float elevation,
-                       float speed,
-                       float distance,
+                       int elevation,
+                       String speed,
+                       String distance,
                        String notes) {
     @Builder public Activity {} // this default constructor is workaround for bug: https://youtrack.jetbrains.com/issue/IDEA-266513/Problem-with-lombok-Builder-and-record
 }
