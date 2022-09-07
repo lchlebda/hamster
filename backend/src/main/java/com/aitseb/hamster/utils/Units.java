@@ -5,14 +5,19 @@ import java.util.concurrent.TimeUnit;
 public final class Units {
 
     /**
-     * Rounds to first multiple of 5 higher than duration
+     * Rounds to first multiple of 5 higher than duration (for durations with units more than one - i.e. 51, 66'30)
+     * Rounds down to first multiple of 5 (for durations with units less than one - i.e. 50'55, 65'15)
      *
      * @param seconds duration time
      * @return duration time in minutes
      */
     public static int secondsToMinutesByFive(int seconds) {
         int minutes = (int) TimeUnit.SECONDS.toMinutes(seconds);
-        return ((minutes / 5) + 1) * 5;
+        if (Math.floorMod(minutes, 5) == 0) {
+            return minutes;
+        } else {
+            return ((minutes / 5) + 1) * 5;
+        }
     }
 
     /**
@@ -33,7 +38,7 @@ public final class Units {
      * @return pace of running
      */
     public static String msToPace(float ms) {
-        int seconds = (int) Math.ceil(1000 / ms);
+        int seconds = (int) Math.floor(1000 / ms);
         int minutesPace = seconds / 60;
         int secondsPace = seconds % 60;
 
