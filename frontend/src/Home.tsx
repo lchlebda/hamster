@@ -85,31 +85,32 @@ const App: FC = (): ReactElement => {
                               {activity.time}
                           </td>
                           <td>
-                              {activity.regeTime}
+                              {activity.regeTime || ''}
                           </td>
                           <td>
-                              {activity.hr}
+                              {activity.hr || ''}
                           </td>
                           <td>
-                              {activity.hrMax}
+                              {activity.hrMax || ''}
                           </td>
                           <td>
-                              {activity.cadence}
+                              {activity.cadence || ''}
                           </td>
                           <td>
-                              {activity.power}
+                              {activity.power || ''}
                           </td>
                           <td>
-                              {activity.ef}
+                              {activity.ef || ''}
                           </td>
                           <td>
-                              {activity.tss}
+                              {activity.tss || ''}
                           </td>
                           <td>
-                              {activity.effort}
+                              {activity.effort || ''}
                           </td>
                           <td>
-                              {activity.elevation}
+                              {activity.type === 'Run' || activity.type === 'Ride' ? activity.elevation
+                                                                                   : activity.elevation || ''}
                           </td>
                           <td>
                               {activity.speed}
