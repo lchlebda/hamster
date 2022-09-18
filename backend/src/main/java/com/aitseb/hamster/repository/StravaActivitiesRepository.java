@@ -1,5 +1,6 @@
 package com.aitseb.hamster.repository;
 
+import com.aitseb.hamster.dto.StravaActivityStream;
 import com.aitseb.hamster.dto.StravaActivity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
@@ -14,22 +15,48 @@ import static java.util.Arrays.asList;
 @RequiredArgsConstructor
 public class StravaActivitiesRepository {
 
-    private static final String url = "https://www.strava.com/api/v3/athlete/activities";
+    private static final String ATHLETE_ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities";
+    private static final String HEARTRATE_STREAM_URL = "http://www.strava.com/api/v3/activities/7817317716/streams?keys=heartrate";
     private final RestTemplate restTemplate;
 
     public List<StravaActivity> getList(String accessToken) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(accessToken);
-        HttpEntity<Object> requestEntity = new HttpEntity<>(headers);
+        HttpEntity<Object> requestEntity = getRequestEntityWithHeaders(accessToken);
         ResponseEntity<StravaActivity[]> list = null;
         try {
-            list = restTemplate.exchange(url, HttpMethod.GET, requestEntity, StravaActivity[].class);
+            list = restTemplate.exchange(
+                    ATHLETE_ACTIVITIES_URL,
+                    HttpMethod.GET,
+                    requestEntity,
+                    StravaActivity[].class);
         } catch (Exception exc) {
             exc.printStackTrace();
         }
 
         return asList(list.getBody());
+    }
+
+    public StravaActivityStream[] getActivitiesStreamWithHeartrate(String accessToken) {
+        HttpEntity<Object> requestEntity = getRequestEntityWithHeaders(accessToken);
+        ResponseEntity<StravaActivityStream[]> list = null;
+        try {
+            list = restTemplate.exchange(
+                    HEARTRATE_STREAM_URL,
+                    HttpMethod.GET,
+                    requestEntity,
+                    StravaActivityStream[].class);
+        } catch (Exception exc) {
+            exc.printStackTrace();
+        }
+
+        return list.getBody();
+    }
+
+    private HttpEntity<Object> getRequestEntityWithHeaders(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(accessToken);
+
+        return new HttpEntity<>(headers);
     }
 
 }

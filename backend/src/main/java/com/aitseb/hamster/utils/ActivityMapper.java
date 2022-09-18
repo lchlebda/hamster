@@ -14,6 +14,8 @@ public final class ActivityMapper {
                 .type(stravaActivity.type())
                 .title(stravaActivity.name())
                 .time(secondsToMinutesByFive(stravaActivity.moving_time()))
+                .hr(Math.round(stravaActivity.average_heartrate()))
+                .hrMax(Math.round(stravaActivity.max_heartrate()))
                 .cadence(Math.round(stravaActivity.average_cadence()))
                 .power(stravaActivity.weighted_average_watts())
                 .effort(stravaActivity.suffer_score())
