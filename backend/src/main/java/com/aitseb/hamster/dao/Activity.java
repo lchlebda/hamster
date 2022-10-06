@@ -19,31 +19,31 @@ public class Activity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @Column(name = "strava_id")
-    private long stravaId;
+    private Long stravaId;
 
     private LocalDate date;
     private StravaActivityType sport;
     private String description;
-    private int time;
+    private Integer time;
 
     @Column(name = "rege_time")
-    private int regeTime;
+    private Integer regeTime;
 
-    private int hr;
+    private Integer hr;
 
     @Column(name = "hr_max")
-    private int hrMax;
+    private Integer hrMax;
 
-    private int cadence;
-    private int power;
-    private float ef;
-    private float tss;
-    private int effort;
-    private int elevation;
-    private float speed;
-    private float distance;
+    private Integer cadence;
+    private Integer power;
+    private Float ef;
+    private Float tss;
+    private Integer effort;
+    private Integer elevation;
+    private Float speed;
+    private Float distance;
     private String notes;
 }
