@@ -27,8 +27,10 @@ public class ActivitiesController {
     public List<ActivityDTO> getActivities(@RequestHeader(name = "ACCESS_TOKEN") String accessToken) {
         List<StravaActivity> activities = stravaActivitiesRepository.getList(accessToken);
         activities.forEach(activitiesService::save);
-        return activities.stream()
-                .map(ActivityMapper::fromStravaToDTO)
+
+        return ((List<Activity>) activitiesRepository.findAll())
+                .stream()
+                .map(ActivityMapper::fromDAOToDTO)
                 .collect(toList());
     }
 

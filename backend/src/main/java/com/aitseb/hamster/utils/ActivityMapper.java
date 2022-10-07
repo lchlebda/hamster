@@ -8,21 +8,22 @@ import static com.aitseb.hamster.utils.Units.*;
 
 public final class ActivityMapper {
 
-    public static ActivityDTO fromStravaToDTO(StravaActivity stravaActivity) {
+    public static ActivityDTO fromDAOToDTO(Activity activity) {
         return ActivityDTO.builder()
-                .stravaId(stravaActivity.id())
-                .date(stravaActivity.start_date())
-                .type(stravaActivity.type())
-                .title(stravaActivity.name())
-                .time(secondsToMinutesByFive(stravaActivity.moving_time()))
-                .hr(Math.round(stravaActivity.average_heartrate()))
-                .hrMax(Math.round(stravaActivity.max_heartrate()))
-                .cadence(Math.round(stravaActivity.average_cadence()))
-                .power(stravaActivity.weighted_average_watts())
-                .effort((int)stravaActivity.suffer_score())
-                .elevation(Math.round(stravaActivity.total_elevation_gain()))
-                .speed(mapSpeed(stravaActivity))
-                .distance(mapDistance(stravaActivity))
+                .stravaId(activity.getStravaId())
+                .date(activity.getDate())
+                .type(activity.getSport())
+                .title(activity.getDescription())
+                .time(activity.getTime())
+                .hr(Math.round(activity.getHr()))
+                .hrMax(Math.round(activity.getHrMax()))
+                .cadence(Math.round(activity.getCadence()))
+                .power(activity.getPower())
+                .effort(activity.getEffort())
+                .tss(activity.getTss())
+                .elevation(Math.round(activity.getElevation()))
+                .speed(mapSpeed(activity))
+                .distance(mapDistance(activity))
                 .build();
     }
 
@@ -43,18 +44,18 @@ public final class ActivityMapper {
                 .build();
     }
 
-    private static String mapDistance(StravaActivity stravaActivity) {
-        return switch (stravaActivity.type()) {
+    private static String mapDistance(Activity activity) {
+        return switch (activity.getSport()) {
             case WeightTraining, Workout -> "";
-            case Swim -> (int)stravaActivity.distance() + " m";
-            default -> Math.round(stravaActivity.distance()/1000*10)/10.f + " km";
+            case Swim -> (int)activity.getDistance() + " m";
+            default -> Math.round(activity.getDistance()/1000*10)/10.f + " km";
         };
     }
 
-    private static String mapSpeed(StravaActivity stravaActivity) {
-        return switch (stravaActivity.type()) {
-            case Ride -> msToKmh(stravaActivity.average_speed()) + " km/h";
-            case Run -> msToPace(stravaActivity.average_speed()) + "/km";
+    private static String mapSpeed(Activity activity) {
+        return switch (activity.getSport()) {
+            case Ride -> msToKmh(activity.getSpeed()) + " km/h";
+            case Run -> msToPace(activity.getSpeed()) + "/km";
             default -> "";
         };
     }
