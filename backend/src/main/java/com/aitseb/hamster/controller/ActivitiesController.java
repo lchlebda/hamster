@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.Comparator.comparing;
@@ -29,14 +31,21 @@ public class ActivitiesController {
 
     @GetMapping
     public List<ActivityDTO> getActivities(@RequestHeader(name = "ACCESS_TOKEN") String accessToken) {
-        List<StravaActivity> activities = stravaActivitiesRepository.getList(accessToken);
-        activities.forEach(activitiesService::save);
+        getAndSaveLatestStravaActivities(accessToken);
 
         return ((List<Activity>) activitiesRepository.findAll())
                 .stream()
                 .sorted(comparing(Activity::getDate).reversed())
                 .map(ActivityMapper::fromDAOToDTO)
                 .collect(toList());
+    }
+
+    private void getAndSaveLatestStravaActivities(String accessToken) {
+        LocalDateTime lastActivityDate = activitiesRepository.findFirstByOrderByDateDesc().getDate();
+        long timestamp = Timestamp.valueOf(lastActivityDate).getTime()/1000;
+
+        List<StravaActivity> activities = stravaActivitiesRepository.getList(accessToken, timestamp);
+        activities.forEach(activitiesService::save);
     }
 
     @GetMapping("/getAll")

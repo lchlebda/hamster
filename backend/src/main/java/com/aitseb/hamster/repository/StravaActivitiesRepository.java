@@ -15,11 +15,11 @@ import static java.util.Arrays.asList;
 @RequiredArgsConstructor
 public class StravaActivitiesRepository {
 
-    private static final String ATHLETE_ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities";
+    private static final String ATHLETE_ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities?after={after}";
     private static final String HEARTRATE_STREAM_URL = "http://www.strava.com/api/v3/activities/7817317716/streams?keys=heartrate";
     private final RestTemplate restTemplate;
 
-    public List<StravaActivity> getList(String accessToken) {
+    public List<StravaActivity> getList(String accessToken, long after) {
         HttpEntity<Object> requestEntity = getRequestEntityWithHeaders(accessToken);
         ResponseEntity<StravaActivity[]> list = null;
         try {
@@ -27,7 +27,8 @@ public class StravaActivitiesRepository {
                     ATHLETE_ACTIVITIES_URL,
                     HttpMethod.GET,
                     requestEntity,
-                    StravaActivity[].class);
+                    StravaActivity[].class,
+                    after);
         } catch (Exception exc) {
             exc.printStackTrace();
         }
