@@ -1,9 +1,9 @@
 package com.aitseb.hamster.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record StravaActivity(long id,
-                             LocalDate start_date,
+                             LocalDateTime start_date,
                              StravaActivityType type,
                              int moving_time,
                              float average_heartrate,

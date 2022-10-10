@@ -19,12 +19,12 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.io.ClassPathResource;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Map.entry;
 
 @Configuration
@@ -63,13 +63,13 @@ public class BatchConfiguration {
     @Value("${file.input}")
     private String fileInput;
 
-    private interface StringToLocalDateConverter extends Converter<String, LocalDate>{ }
+    private interface StringToLocalDateTimeConverter extends Converter<String, LocalDateTime>{ }
 
     @SuppressWarnings("ConstantConditions")
     @Bean
     public FlatFileItemReader<Activity> reader() {
         DefaultConversionService conversionService = new DefaultConversionService();
-        conversionService.addConverter((StringToLocalDateConverter) s -> LocalDate.parse(s, ISO_LOCAL_DATE));
+        conversionService.addConverter((StringToLocalDateTimeConverter) s -> LocalDateTime.parse(s, ISO_LOCAL_DATE_TIME));
 
         return new FlatFileItemReaderBuilder<Activity>()
                 .name("activityItemReader")

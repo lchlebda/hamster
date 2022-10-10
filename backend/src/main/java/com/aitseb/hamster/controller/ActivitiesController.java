@@ -8,10 +8,14 @@ import com.aitseb.hamster.repository.StravaActivitiesRepository;
 import com.aitseb.hamster.service.ActivitiesService;
 import com.aitseb.hamster.utils.ActivityMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 
 @RestController
@@ -30,6 +34,7 @@ public class ActivitiesController {
 
         return ((List<Activity>) activitiesRepository.findAll())
                 .stream()
+                .sorted(comparing(Activity::getDate).reversed())
                 .map(ActivityMapper::fromDAOToDTO)
                 .collect(toList());
     }

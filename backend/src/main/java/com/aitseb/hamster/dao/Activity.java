@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "activity")
@@ -24,7 +24,7 @@ public class Activity {
     @Column(name = "strava_id")
     private long stravaId;
 
-    private LocalDate date;
+    private LocalDateTime date;
     private StravaActivityType sport;
     private String description;
     private int time;
