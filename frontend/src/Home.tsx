@@ -1,8 +1,8 @@
-import { FC, ReactElement, useEffect, useState } from 'react';
+import { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import './App.css';
 import { useAuth } from './authorization/AuthProvider';
 import { ActivitiesService } from './services';
-import { Table } from 'react-bootstrap';
+import { Column, useTable } from 'react-table';
 
 export type Activity = {
   id: number;
@@ -26,8 +26,27 @@ export type Activity = {
 
 const App: FC = (): ReactElement => {
 
-  const [activities, setActivities] = useState<Activity[] | []>();
+  const [activities, setActivities] = useState<Activity[]>([]);
   const auth = useAuth();
+
+  const columnNames = ['Date', 'Sport', 'Title', 'Time', 'Rege time', 'HR', 'HR max', 'Cadence', 'Power', 'EF', 'TSS',
+                       'Effort', 'Elevation', 'Speed', 'Distance', 'Notes'];
+  const fields = ['date', 'type', 'title', 'time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss',
+                  'effort', 'elevation', 'speed', 'distance', 'notes'];
+
+  const data = useMemo<Activity[]>(() => activities, [activities]);
+  const cols = columnNames.map((header, index) => {
+      return {Header: header, accessor: fields[index].toString()};
+  });
+  const columns = useMemo<Column<Activity>[]>(() => cols as Column<Activity>[], []);
+
+  const {
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        rows,
+        prepareRow,
+  } = useTable({ columns, data })
 
   useEffect((): void => {
       function getActivities(): Promise<Activity[]> {
@@ -48,83 +67,45 @@ const App: FC = (): ReactElement => {
           <h1>Welcome to Hamster App!</h1>
           <header className='App-header'>
           <div>
-              <Table striped bordered hover size='sm'>
+              <table {...getTableProps()} className='table'>
                   <thead>
-                  <tr>
-                      <th>Date</th>
-                      <th>Sport</th>
-                      <th>Title</th>
-                      <th>Time</th>
-                      <th>Rege time</th>
-                      <th>HR</th>
-                      <th>HR max</th>
-                      <th>Cadence</th>
-                      <th>Power</th>
-                      <th>EF</th>
-                      <th>TSS</th>
-                      <th>Effort</th>
-                      <th>Elevation</th>
-                      <th>Speed</th>
-                      <th>Distance</th>
-                      <th>Notes</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {activities?.map(activity =>
-                      <tr key={activity.id}>
-                          <td>
-                              {activity.date}
-                          </td>
-                          <td>
-                              {activity.type}
-                          </td>
-                          <td>
-                              {activity.title}
-                          </td>
-                          <td>
-                              {activity.time}
-                          </td>
-                          <td>
-                              {activity.regeTime || ''}
-                          </td>
-                          <td>
-                              {activity.hr || ''}
-                          </td>
-                          <td>
-                              {activity.hrMax || ''}
-                          </td>
-                          <td>
-                              {activity.cadence || ''}
-                          </td>
-                          <td>
-                              {activity.power || ''}
-                          </td>
-                          <td>
-                              {activity.ef || ''}
-                          </td>
-                          <td>
-                              {activity.tss || ''}
-                          </td>
-                          <td>
-                              {activity.effort || ''}
-                          </td>
-                          <td>
-                              {activity.type === 'Run' || activity.type === 'Ride' ? activity.elevation
-                                                                                   : activity.elevation || ''}
-                          </td>
-                          <td>
-                              {activity.speed}
-                          </td>
-                          <td>
-                              {activity.distance}
-                          </td>
-                          <td>
-                              {activity.notes}
-                          </td>
+                  {headerGroups.map(headerGroup => (
+                      <tr {...headerGroup.getHeaderGroupProps()}>
+                          {headerGroup.headers.map(column => (
+                              <th
+                                  {...column.getHeaderProps()}
+                                  className='table-header'
+                              >
+                                  {column.render('Header')}
+                              </th>
+                          ))}
                       </tr>
-                  )}
+                  ))}
+                  </thead>
+                  <tbody {...getTableBodyProps()}>
+                  {rows.map(row => {
+                      prepareRow(row)
+                      return (
+                          <tr {...row.getRowProps()}>
+                              {row.cells.map(cell => {
+                                  return (
+                                      <td
+                                          {...cell.getCellProps()}
+                                          style={{
+                                              padding: '10px',
+                                              border: 'solid 1px gray',
+                                              background: 'papayawhip',
+                                          }}
+                                      >
+                                          {cell.render('Cell')}
+                                      </td>
+                                  )
+                              })}
+                          </tr>
+                      )
+                  })}
                   </tbody>
-              </Table>
+              </table>
           </div>
         </header>
       </div>
