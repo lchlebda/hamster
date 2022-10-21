@@ -16,6 +16,7 @@ import java.sql.Timestamp
 
 import static java.time.LocalDateTime.of
 import static java.time.Month.JANUARY
+import static org.hamcrest.Matchers.hasSize
 import static org.hamcrest.Matchers.is
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -63,6 +64,7 @@ class ActivitiesControllerTest extends Specification {
               .andExpect(jsonPath('$.[0].date[1]', is(1)))
               .andExpect(jsonPath('$.[0].date[2]', is(21)))
               .andExpect(jsonPath('$.[0].type', is(StravaActivityType.Workout.toString())))
+              .andExpect(jsonPath('$', hasSize(4)))
               .andExpect(status().is(HttpStatus.OK.value()))
 
         0 * activitiesRepository.save(activity2)
