@@ -86,17 +86,10 @@ const App: FC = (): ReactElement => {
                   {rows.map(row => {
                       prepareRow(row)
                       return (
-                          <tr {...row.getRowProps()}>
+                          <tr {...row.getRowProps()} className={`table-row-${row.values.type}`}>
                               {row.cells.map(cell => {
                                   return (
-                                      <td
-                                          {...cell.getCellProps()}
-                                          style={{
-                                              padding: '10px',
-                                              border: 'solid 1px gray',
-                                              background: 'papayawhip',
-                                          }}
-                                      >
+                                      <td {...cell.getCellProps()} className='table-cell'>
                                           {cell.render('Cell')}
                                       </td>
                                   )

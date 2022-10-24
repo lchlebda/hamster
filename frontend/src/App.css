@@ -33,11 +33,32 @@
   border: solid 1px black;
 }
 
+.table-cell {
+  padding: 10px;
+  border: solid 1px gray;
+}
+
 .table-header {
     border-bottom: solid 2px black;
     background: #c6c6c6;
     color: black;
     font-weight: bold;
+}
+
+.table-row-Ride {
+  background: rgba(50, 205, 50, 0.75);
+}
+
+.table-row-Run {
+  background: rgba(255, 255, 0, 0.75);
+}
+
+.table-row-AlpineSki, .table-row-BackcountrySki, .table-row-Hike, .table-row-Walk, .table-row-WeightTraining, .table-row-Workout {
+  background: rgba(255, 140, 0, 0.75);
+}
+
+.table-row-Swim {
+  background: rgba(0, 191, 255, 0.75);
 }
 
 @keyframes App-logo-spin {
