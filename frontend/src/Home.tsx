@@ -2,7 +2,7 @@ import { ChangeEvent, FC, ReactElement, useEffect, useMemo, useState } from 'rea
 import './App.css';
 import { useAuth } from './authorization/AuthProvider';
 import { ActivitiesService } from './services';
-import { Cell, Column, useTable } from 'react-table';
+import { Column, useTable } from 'react-table';
 
 export type Activity = {
     id: number;
@@ -26,8 +26,8 @@ export type Activity = {
 
 type IEditableCell = {
     value: string,
-    row: { index: number, values: Array<Cell> },
-    column: { id: number },
+    row: { index: number, values: Activity },
+    column: { id: string },
     updateMyData: Function
 }
 
@@ -50,8 +50,8 @@ const App: FC = (): ReactElement => {
 
     const EditableCell = ({
                               value: initialValue,
-                              row: {index, values},
-                              column: {id},
+                              row: { index, values },
+                              column: { id },
                               updateMyData: updateMyData,
                           }: IEditableCell) => {
         const [value, setValue] = useState<string>(initialValue)
@@ -59,16 +59,28 @@ const App: FC = (): ReactElement => {
             setValue(e.target.value)
         }
         const onBlur = () => {
-            updateMyData(index, id, value)
+            updateMyData(index, id, value);
         }
-        const showNothingWhenZero = () => {
+        const showValueOrNothingWhenZero = () => {
+            const arr = ['regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss', 'effort'];
+            if (!initialValue && arr.includes(id)) {
+                return '';
+            }
+            if (id === 'elevation') {
+                if (values.type !== 'Run' && values.type !== 'Ride' && !initialValue) {
+                    return '';
+                }
+            }
+
+            return value;
         }
 
         useEffect(() => {
             setValue(initialValue)
         }, [initialValue])
 
-        return <input value={ value } onChange={ onChange } onBlur={ onBlur }/>
+        return id === 'date' || id === 'type' ? value
+            : <input value={ showValueOrNothingWhenZero() } onChange={ onChange } onBlur={ onBlur }/>
     }
 
     const updateMyData = (rowIndex: number, columnId: number, value: string) => {
