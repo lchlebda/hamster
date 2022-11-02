@@ -83,11 +83,15 @@ const App: FC = (): ReactElement => {
             : <input value={ showValueOrNothingWhenZero() } onChange={ onChange } onBlur={ onBlur }/>
     }
 
-    const updateMyData = (rowIndex: number, columnId: number, value: string) => {
+    const updateMyData = (rowIndex: number, columnId: string, value: string) => {
         setSkipPageReset(true)
         setActivities(old =>
             old.map((row, index) => {
                 if (index === rowIndex) {
+                    const prop = columnId as keyof typeof row;
+                    if (row[prop] != value) {
+                        ActivitiesService.updateActivity(row['id'], columnId, value);
+                    }
                     return {
                         ...old[rowIndex],
                         [columnId]: value,

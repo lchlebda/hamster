@@ -7,10 +7,7 @@ import com.aitseb.hamster.repository.ActivitiesRepository;
 import com.aitseb.hamster.repository.StravaActivitiesRepository;
 import com.aitseb.hamster.utils.ActivityMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -35,6 +32,15 @@ public class ActivitiesController {
                 .sorted(comparing(Activity::getDate).reversed())
                 .map(ActivityMapper::fromDAOToDTO)
                 .collect(toList());
+    }
+
+    @PostMapping("/update")
+    public boolean updateActivity(@RequestParam long id, @RequestParam String prop, @RequestParam String value) {
+        switch (prop) {
+            case "time" -> activitiesRepository.updateTime(id, Integer.valueOf(value));
+            case "title" -> activitiesRepository.updateDescription(id, value);
+        }
+        return true;
     }
 
     @GetMapping("/getAll")

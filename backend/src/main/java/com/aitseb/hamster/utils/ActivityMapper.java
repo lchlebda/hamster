@@ -10,6 +10,7 @@ public final class ActivityMapper {
 
     public static ActivityDTO fromDAOToDTO(Activity activity) {
         return ActivityDTO.builder()
+                .id(activity.getId())
                 .stravaId(activity.getStravaId())
                 .date(activity.getDate().toLocalDate())
                 .type(activity.getSport())
