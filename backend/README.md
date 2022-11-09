@@ -12,6 +12,10 @@ change proxy in package.json from http://backend:8080 to http://localhost:8080/
 remove images: 
  - docker rmi -f hamster-mw
  - docker rmi -f hamster-fe
+build and run docker image:
+ - mvn clean install
+ - docker build -t hamster .
+ - docker run -p 8080:8080 hamster
 
 ###### DOCKER HOSTING
 https://devcenter.heroku.com/articles/container-registry-and-runtime
