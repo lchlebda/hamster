@@ -3,10 +3,13 @@ package com.aitseb.hamster.controller;
 import com.aitseb.hamster.dao.Activity;
 import com.aitseb.hamster.dto.ActivityDTO;
 import com.aitseb.hamster.dto.StravaActivity;
+import com.aitseb.hamster.exception.StravaException;
 import com.aitseb.hamster.repository.ActivitiesRepository;
 import com.aitseb.hamster.repository.StravaActivitiesRepository;
 import com.aitseb.hamster.utils.ActivityMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
@@ -24,14 +27,22 @@ public class ActivitiesController {
     private final ActivitiesRepository activitiesRepository;
 
     @GetMapping
-    public List<ActivityDTO> getActivities(@RequestHeader(name = "ACCESS_TOKEN") String accessToken) {
-        getAndSaveLatestStravaActivities(accessToken);
+    public ResponseEntity<List<ActivityDTO>> getActivities(@RequestHeader(name = "ACCESS_TOKEN") String accessToken) {
+        boolean stravaWorks = true;
+        try {
+            getAndSaveLatestStravaActivities(accessToken);
+        } catch (StravaException exc) {
+            stravaWorks = false;
+        }
 
-        return ((List<Activity>) activitiesRepository.findAll())
-                .stream()
-                .sorted(comparing(Activity::getDate).reversed())
-                .map(ActivityMapper::fromDAOToDTO)
-                .collect(toList());
+        List<ActivityDTO> list = ((List<Activity>) activitiesRepository.findAll())
+                                                    .stream()
+                                                    .sorted(comparing(Activity::getDate).reversed())
+                                                    .map(ActivityMapper::fromDAOToDTO)
+                                                    .collect(toList());
+
+        return stravaWorks ? ResponseEntity.ok(list)
+                           : ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(list);
     }
 
     @PostMapping("/update")
@@ -44,8 +55,8 @@ public class ActivitiesController {
     }
 
     @GetMapping("/getAll")
-    public List<Activity> getActivities() {
-        return (List<Activity>) activitiesRepository.findAll();
+    public ResponseEntity<List<Activity>> getActivities() {
+        return ResponseEntity.ok((List<Activity>) activitiesRepository.findAll());
     }
 
     private void getAndSaveLatestStravaActivities(String accessToken) {

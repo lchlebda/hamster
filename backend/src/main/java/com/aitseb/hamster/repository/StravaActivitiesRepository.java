@@ -1,7 +1,8 @@
 package com.aitseb.hamster.repository;
 
-import com.aitseb.hamster.dto.StravaActivityStream;
 import com.aitseb.hamster.dto.StravaActivity;
+import com.aitseb.hamster.dto.StravaActivityStream;
+import com.aitseb.hamster.exception.StravaException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
@@ -10,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,19 +23,19 @@ public class StravaActivitiesRepository {
 
     public List<StravaActivity> getList(String accessToken, long after) {
         HttpEntity<Object> requestEntity = getRequestEntityWithHeaders(accessToken);
-        ResponseEntity<StravaActivity[]> list = null;
         try {
-            list = restTemplate.exchange(
+            ResponseEntity<StravaActivity[]> list = restTemplate.exchange(
                     ATHLETE_ACTIVITIES_URL,
                     HttpMethod.GET,
                     requestEntity,
                     StravaActivity[].class,
                     after);
+            return list.getBody() != null ? asList(list.getBody()) : emptyList();
+
         } catch (Exception exc) {
             exc.printStackTrace();
+            throw new StravaException("endpoint " + ATHLETE_ACTIVITIES_URL + " failed with exception: " + exc.getMessage());
         }
-
-        return asList(list.getBody());
     }
 
     public StravaActivityStream[] getActivitiesStreamWithHeartrate(String accessToken) {
