@@ -1,13 +1,9 @@
-import { Activity } from '../Home';
-
-const getActivities = async (token: string): Promise<Activity[]> => {
-    const response = await fetch('/activities', {
+const getActivities = async (token: string): Promise<Response> => {
+    return await fetch('/activities', {
         headers: {
             'ACCESS_TOKEN': token,
         }
     });
-
-    return response.json();
 }
 
 const updateActivity = async (id: number, prop: string, value: string): Promise<boolean> => {

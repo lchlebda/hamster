@@ -34,6 +34,7 @@ type IEditableCell = {
 const App: FC = (): ReactElement => {
 
     const [activities, setActivities] = useState<Activity[]>([]);
+    const [exception, setException] = useState(false);
     const [skipPageReset, setSkipPageReset] = useState(false)
     const auth = useAuth();
 
@@ -121,11 +122,15 @@ const App: FC = (): ReactElement => {
 
     useEffect((): void => {
         function getActivities(): Promise<Activity[]> {
-            try {
-                return ActivitiesService.getActivities(auth.token);
-            } catch (e) {
+            return ActivitiesService.getActivities(auth.token).then((response) => {
+                if (response.status === 206) {
+                    setException(true);
+                }
+
+                return response.json();
+            }).catch((reason => {
                 return Promise.any([]);
-            }
+            }));
         }
 
         getActivities().then((body) => {
@@ -137,6 +142,7 @@ const App: FC = (): ReactElement => {
         <div className='App'>
             <h1>Welcome to Hamster App!</h1>
             <header className='App-header'>
+                { exception && <div className='strava-exception'>Strava service is currently unavailable, cannot get the most recent data.</div> }
                 <div>
                     <table {...getTableProps()} className='table'>
                         <thead>
