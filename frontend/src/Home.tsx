@@ -28,7 +28,7 @@ type IEditableCell = {
     value: string,
     row: { index: number, values: Activity },
     column: { id: string },
-    updateMyData: Function
+    editCell: Function
 }
 
 const App: FC = (): ReactElement => {
@@ -42,6 +42,7 @@ const App: FC = (): ReactElement => {
         'Effort', 'Elevation', 'Speed', 'Distance', 'Notes'];
     const fields = ['date', 'type', 'title', 'time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss',
         'effort', 'elevation', 'speed', 'distance', 'notes'];
+    const numberFields =['time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'effort', 'elevation']
 
     const data = useMemo<Activity[]>(() => activities, [activities]);
     const cols = columnNames.map((header, index) => {
@@ -53,18 +54,19 @@ const App: FC = (): ReactElement => {
                               value: initialValue,
                               row: { index, values },
                               column: { id },
-                              updateMyData: updateMyData,
+                              editCell: editCell,
                           }: IEditableCell) => {
         const [value, setValue] = useState<string>(initialValue)
         const onChange = (e: ChangeEvent<HTMLInputElement>) => {
             setValue(e.target.value)
         }
         const onBlur = () => {
-            updateMyData(index, id, value);
+            editCell(index, id, value);
         }
         const showValueOrNothingWhenZero = () => {
             const arr = ['regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss', 'effort'];
-            if (!initialValue && arr.includes(id)) {
+            // @ts-ignore
+            if (value == false && arr.includes(id)) {
                 return '';
             }
             if (id === 'elevation') {
@@ -84,23 +86,40 @@ const App: FC = (): ReactElement => {
             : <input value={ showValueOrNothingWhenZero() } onChange={ onChange } onBlur={ onBlur }/>
     }
 
-    const updateMyData = (rowIndex: number, columnId: string, value: string) => {
+    const editCell = (rowIndex: number, columnName: string, value: string): void => {
         setSkipPageReset(true)
         setActivities(old =>
             old.map((row, index) => {
                 if (index === rowIndex) {
-                    const prop = columnId as keyof typeof row;
-                    if (row[prop] != value) {
-                        ActivitiesService.updateActivity(row['id'], columnId, value);
+                    const prop = columnName as keyof typeof row;
+                    const isValid = validateData(columnName, value)
+                    if (row[prop] != value && isValid) {
+                        ActivitiesService.updateActivity(row['id'], columnName, value);
                     }
-                    return {
-                        ...old[rowIndex],
-                        [columnId]: value,
+                    if (!isValid) {
+                        // @ts-ignore
+                        document.getElementById(`cell_${index}_${columnName}`).setAttribute('class', 'table-cell-not-valid');
+                    } else {
+                        // @ts-ignore
+                        document.getElementById(`cell_${index}_${columnName}`).setAttribute('class', 'table-cell');
+                    }
+                    if (isValid) {
+                        return {
+                            ...old[rowIndex],
+                            [columnName]: value,
+                        }
                     }
                 }
                 return row
             })
         )
+    }
+
+    const validateData = (columnName: string, value: any) => {
+        if (numberFields.includes(columnName)) {
+            return !isNaN(value);
+        }
+        return true;
     }
 
     const defaultColumn = {
@@ -114,7 +133,7 @@ const App: FC = (): ReactElement => {
         rows,
         prepareRow,
         // @ts-ignore
-    } = useTable({columns, data, defaultColumn, autoResetPage: !skipPageReset, updateMyData})
+    } = useTable({columns, data, defaultColumn, autoResetPage: !skipPageReset, editCell})
 
     useEffect(() => {
         setSkipPageReset(false)
@@ -166,7 +185,7 @@ const App: FC = (): ReactElement => {
                                 <tr {...row.getRowProps()} className={`table-row-${row.values.type}`}>
                                     {row.cells.map(cell => {
                                         return (
-                                            <td {...cell.getCellProps()} className='table-cell'>
+                                            <td {...cell.getCellProps()} className='table-cell' id={`${cell.getCellProps().key}`}>
                                                 {cell.render('Cell')}
                                             </td>
                                         )

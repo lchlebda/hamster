@@ -42,7 +42,21 @@
   border: solid 1px gray;
 }
 
+.table-cell-not-valid {
+  padding: 10px;
+  border: solid 1px gray;
+  background: orangered !important;
+}
+
 .table-cell input {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  width: 80px;
+}
+
+.table-cell-not-valid input {
   padding: 0;
   margin: 0;
   border: 0;
