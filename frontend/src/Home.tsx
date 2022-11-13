@@ -42,7 +42,7 @@ const App: FC = (): ReactElement => {
         'Effort', 'Elevation', 'Speed', 'Distance', 'Notes'];
     const fields = ['date', 'type', 'title', 'time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss',
         'effort', 'elevation', 'speed', 'distance', 'notes'];
-    const numberFields =['time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'effort', 'elevation']
+    const numberFields =['time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss', 'effort', 'elevation']
 
     const data = useMemo<Activity[]>(() => activities, [activities]);
     const cols = columnNames.map((header, index) => {
@@ -92,7 +92,7 @@ const App: FC = (): ReactElement => {
             old.map((row, index) => {
                 if (index === rowIndex) {
                     const prop = columnName as keyof typeof row;
-                    const isValid = validateData(columnName, value)
+                    const isValid = validateData(columnName, value, row)
                     if (row[prop] != value && isValid) {
                         ActivitiesService.updateActivity(row['id'], columnName, value);
                     }
@@ -115,9 +115,21 @@ const App: FC = (): ReactElement => {
         )
     }
 
-    const validateData = (columnName: string, value: any) => {
+    const validateData = (columnName: string, value: any, row: Activity) => {
         if (numberFields.includes(columnName)) {
             return !isNaN(value);
+        }
+        if (columnName === 'speed' && row.type === 'Run') {
+            return /^[1-7]:[0-5][0-9]\s*(\/km)?\s*$/.exec(value) != null;
+        }
+        if (columnName === 'speed' && row.type === 'Ride') {
+            return /^\d+(\.\d+)?\s*(km\/h)?\s*$/.exec(value) != null;
+        }
+        if (columnName === 'distance' && ['Run', 'Ride', 'Hike', 'Walk', 'BackcountrySki'].includes(row.type)) {
+            return /^\d+(\.\d+)?\s*(km)?\s*$/.exec(value) != null;
+        }
+        if (columnName === 'distance' && row.type === 'Swim') {
+            return /^\d+\s*(m)?\s*$/.exec(value) != null;
         }
         return true;
     }
