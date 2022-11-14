@@ -42,7 +42,7 @@ const App: FC = (): ReactElement => {
         'Effort', 'Elevation', 'Speed', 'Distance', 'Notes'];
     const fields = ['date', 'type', 'title', 'time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss',
         'effort', 'elevation', 'speed', 'distance', 'notes'];
-    const numberFields =['time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss', 'effort', 'elevation']
+    const integerFields =['time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'effort', 'elevation']
 
     const data = useMemo<Activity[]>(() => activities, [activities]);
     const cols = columnNames.map((header, index) => {
@@ -116,8 +116,11 @@ const App: FC = (): ReactElement => {
     }
 
     const validateData = (columnName: string, value: any, row: Activity) => {
-        if (numberFields.includes(columnName)) {
+        if (integerFields.includes(columnName)) {
             return Number.isInteger(parseFloat(value));
+        }
+        if (['ef', 'tss'].includes(columnName)) {
+            return !isNaN(value);
         }
         if (columnName === 'speed' && row.type === 'Run') {
             return /^[1-7]:[0-5][0-9]\s*(\/km)?\s*$/.exec(value) != null;

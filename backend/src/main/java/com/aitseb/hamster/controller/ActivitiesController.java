@@ -48,8 +48,18 @@ public class ActivitiesController {
     @PostMapping("/update")
     public boolean updateActivity(@RequestParam long id, @RequestParam String prop, @RequestParam String value) {
         switch (prop) {
-            case "time" -> activitiesRepository.updateTime(id, Integer.valueOf(value));
             case "title" -> activitiesRepository.updateDescription(id, value);
+            case "time" -> activitiesRepository.updateTime(id, Integer.valueOf(value));
+            case "regeTime" -> activitiesRepository.updateRegeTime(id, Integer.valueOf(value));
+            case "hr" -> activitiesRepository.updateHr(id, Integer.valueOf(value));
+            case "hrMax" -> activitiesRepository.updateHrMax(id, Integer.valueOf(value));
+            case "cadence" -> activitiesRepository.updateCadence(id, Integer.valueOf(value));
+            case "power" -> activitiesRepository.updatePower(id, Integer.valueOf(value));
+            case "ef" -> activitiesRepository.updateEf(id, Float.valueOf(value));
+            case "tss" -> activitiesRepository.updateTSS(id, Float.valueOf(value));
+            case "effort" -> activitiesRepository.updateEffort(id, Integer.valueOf(value));
+            case "elevation" -> activitiesRepository.updateElevation(id, Integer.valueOf(value));
+            case "notes" -> activitiesRepository.updateNotes(id, value);
         }
         return true;
     }
