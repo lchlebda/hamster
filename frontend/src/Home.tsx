@@ -117,7 +117,7 @@ const App: FC = (): ReactElement => {
 
     const validateData = (columnName: string, value: any, row: Activity) => {
         if (numberFields.includes(columnName)) {
-            return !isNaN(value);
+            return Number.isInteger(parseFloat(value));
         }
         if (columnName === 'speed' && row.type === 'Run') {
             return /^[1-7]:[0-5][0-9]\s*(\/km)?\s*$/.exec(value) != null;
