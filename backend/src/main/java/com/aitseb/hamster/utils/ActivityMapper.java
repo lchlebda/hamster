@@ -56,7 +56,8 @@ public final class ActivityMapper {
     private static String mapSpeed(Activity activity) {
         return switch (activity.getSport()) {
             case Ride -> msToKmh(activity.getSpeed()) + " km/h";
-            case Run -> msToPace(activity.getSpeed()) + "/km";
+            case Run -> msToRunPace(activity.getSpeed()) + "/km";
+            case Swim -> msToSwimPace(activity.getSpeed()) + "/100m";
             default -> "";
         };
     }

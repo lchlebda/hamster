@@ -3,10 +3,12 @@ package com.aitseb.hamster.controller;
 import com.aitseb.hamster.dao.Activity;
 import com.aitseb.hamster.dto.ActivityDTO;
 import com.aitseb.hamster.dto.StravaActivity;
+import com.aitseb.hamster.dto.StravaActivityType;
 import com.aitseb.hamster.exception.StravaException;
 import com.aitseb.hamster.repository.ActivitiesRepository;
 import com.aitseb.hamster.repository.StravaActivitiesRepository;
 import com.aitseb.hamster.utils.ActivityMapper;
+import com.aitseb.hamster.utils.Units;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,8 +47,11 @@ public class ActivitiesController {
                            : ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(list);
     }
 
-    @PostMapping("/update")
-    public boolean updateActivity(@RequestParam long id, @RequestParam String prop, @RequestParam String value) {
+    @PostMapping("/update/{id}")
+    public boolean updateActivity(@PathVariable long id,
+                                  @RequestParam StravaActivityType type,
+                                  @RequestParam String prop,
+                                  @RequestParam String value) {
         switch (prop) {
             case "title" -> activitiesRepository.updateDescription(id, value);
             case "time" -> activitiesRepository.updateTime(id, Integer.valueOf(value));
@@ -59,6 +64,7 @@ public class ActivitiesController {
             case "tss" -> activitiesRepository.updateTSS(id, Float.valueOf(value));
             case "effort" -> activitiesRepository.updateEffort(id, Integer.valueOf(value));
             case "elevation" -> activitiesRepository.updateElevation(id, Integer.valueOf(value));
+            case "speed" -> activitiesRepository.updateSpeed(id, parseSpeed(type, value));
             case "notes" -> activitiesRepository.updateNotes(id, value);
         }
         return true;
@@ -81,6 +87,15 @@ public class ActivitiesController {
 
     private void saveActivity(StravaActivity stravaActivity) {
         activitiesRepository.save(ActivityMapper.fromStravaToDAO(stravaActivity));
+    }
+
+    private float parseSpeed(StravaActivityType type, String value) {
+        switch (type) {
+            case Run -> { return Units.runPaceToMs(value); }
+            case Ride -> { return Units.kmhToMs(value); }
+            case Swim -> { return Units.swimPaceToMs(value); }
+        }
+        throw new RuntimeException();
     }
 
 }

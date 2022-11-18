@@ -6,8 +6,8 @@ const getActivities = async (token: string): Promise<Response> => {
     });
 }
 
-const updateActivity = async (id: number, prop: string, value: string): Promise<boolean> => {
-    const response = await fetch('/activities/update?' + new URLSearchParams({id: id.toString(), prop: prop, value: value}),
+const updateActivity = async (id: number, type: string, prop: string, value: string): Promise<boolean> => {
+    const response = await fetch(`/activities/update/${id}?` + new URLSearchParams({type, prop, value}),
                                  { method: 'POST' });
     return response.json();
 }

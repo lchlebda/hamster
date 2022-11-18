@@ -94,7 +94,7 @@ const App: FC = (): ReactElement => {
                     const prop = columnName as keyof typeof row;
                     const isValid = validateData(columnName, value, row)
                     if (row[prop] != value && isValid) {
-                        ActivitiesService.updateActivity(row['id'], columnName, value);
+                        ActivitiesService.updateActivity(row['id'], row['type'], columnName, value);
                     }
                     if (!isValid) {
                         // @ts-ignore
@@ -122,11 +122,16 @@ const App: FC = (): ReactElement => {
         if (['ef', 'tss'].includes(columnName)) {
             return !isNaN(value);
         }
-        if (columnName === 'speed' && row.type === 'Run') {
-            return /^[1-7]:[0-5][0-9]\s*(\/km)?\s*$/.exec(value) != null;
-        }
-        if (columnName === 'speed' && row.type === 'Ride') {
-            return /^\d+(\.\d+)?\s*(km\/h)?\s*$/.exec(value) != null;
+        if (columnName === 'speed') {
+            if (!['Run', 'Ride', 'Swim'].includes(row.type)) {
+                return false; // I don't want to set speed for any other activities besides run, ride and swim
+            } else if (row.type === 'Run') {
+                return /^[1-7]:[0-5][0-9]\s*(\/km)?\s*$/.exec(value) != null;
+            } else if (row.type === 'Ride') {
+                return /^\d+(\.\d+)?\s*(km\/h)?\s*$/.exec(value) != null;
+            } else if (row.type === 'Swim') {
+                return /^[1-7]:[0-5][0-9]\s*(\/100m)?\s*$/.exec(value) != null;
+            }
         }
         if (columnName === 'distance' && ['Run', 'Ride', 'Hike', 'Walk', 'BackcountrySki'].includes(row.type)) {
             return /^\d+(\.\d+)?\s*(km)?\s*$/.exec(value) != null;

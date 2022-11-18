@@ -70,6 +70,11 @@ public interface ActivitiesRepository extends CrudRepository<Activity, Long> {
 
     @Modifying
     @Transactional
+    @Query("update Activity a set a.speed = :speed where a.id = :id")
+    void updateSpeed(@Param(value = "id") long id, @Param(value = "speed") Float speed);
+
+    @Modifying
+    @Transactional
     @Query("update Activity a set a.notes = :notes where a.id = :id")
     void updateNotes(@Param(value = "id") long id, @Param(value = "notes") String notes);
 
