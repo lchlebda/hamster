@@ -59,6 +59,9 @@ public final class Units {
      * @return speed of running in m/s
      */
     public static float runPaceToMs(String pace) {
+        if (pace.isBlank()) {
+            return 0;
+        }
         if (!Pattern.compile("^[1-7]:[0-5][0-9]\\s*(/km)?\\s*$").matcher(pace).matches()) {
             throw new NumberFormatException(pace + " has wrong run pace format.");
         }
@@ -114,6 +117,9 @@ public final class Units {
      */
 
     public static float swimPaceToMs(String pace) {
+        if (pace.isBlank()) {
+            return 0;
+        }
         if (!Pattern.compile("^[1-7]:[0-5][0-9]\\s*(/100m)?\\s*$").matcher(pace).matches()) {
             throw new NumberFormatException(pace + " has wrong swim pace format.");
         }

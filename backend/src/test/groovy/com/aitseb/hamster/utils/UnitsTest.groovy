@@ -93,6 +93,8 @@ class UnitsTest extends Specification {
         '4:59'      || 3.344f
         '5:01'      || 3.322f
         '5:14'      || 3.184f
+        ''          || 0f
+        '   '       || 0f
     }
 
     @Unroll
@@ -133,6 +135,8 @@ class UnitsTest extends Specification {
         '1:59 /100m ' || 0.84f
         '2:00 '       || 0.833f
         '2:01'        || 0.826f
+        ''            || 0f
+        '   '         || 0f
     }
 
     @Unroll
