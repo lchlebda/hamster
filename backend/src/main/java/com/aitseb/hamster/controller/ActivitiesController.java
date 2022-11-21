@@ -68,6 +68,7 @@ public class ActivitiesController {
             case "distance" -> activitiesRepository.updateDistance(id, parseDistance(type, value));
             case "notes" -> activitiesRepository.updateNotes(id, value);
         }
+
         return true;
     }
 
@@ -101,7 +102,7 @@ public class ActivitiesController {
 
     private int parseDistance(StravaActivityType type, String value) {
         switch (type) {
-            case Run, Ride, Hike, Walk, BackcountrySki -> { return Units.parseDistanceInKmToMetres(value); }
+            case Run, Ride, Hike, Walk, AlpineSki, BackcountrySki -> { return Units.parseDistanceInKmToMetres(value); }
             case Swim -> { return Units.parseDistanceInMetres(value); }
         }
         throw new IllegalArgumentException("Distance shouldn't be set for " + type);
