@@ -127,6 +127,50 @@ public final class Units {
         return parsePaceToMs(pace, SWIM_FACTOR);
     }
 
+    /**
+     * Convert distance in km to meters
+     *
+     * @param distance in km (may contain 'km' string at the end)
+     * @return distance in metres
+     */
+    public static int parseDistanceInKmToMetres(String distance) {
+        if (distance.isBlank()) {
+            return 0;
+        }
+        if (!Pattern.compile("^\\d+(\\.\\d+)?\\s*(km)?\\s*$").matcher(distance).matches()) {
+            throw new NumberFormatException(distance + " has wrong distance format.");
+        }
+        Pattern pattern = Pattern.compile("^\\d+(\\.\\d+)?");
+        Matcher matcher = pattern.matcher(distance);
+        if (matcher.find()) {
+            float distanceKm = Float.parseFloat(matcher.group(0));
+
+            return (int) (distanceKm * 1000);
+        }
+        throw new NumberFormatException(distance + " has wrong distance format.");
+    }
+
+    /**
+     * Convert distance in meters from String to int
+     *
+     * @param distance in m (may contain 'm' character at the end)
+     * @return distance in metres as int
+     */
+    public static int parseDistanceInMetres(String distance) {
+        if (distance.isBlank()) {
+            return 0;
+        }
+        if (!Pattern.compile("^\\d+\\s*(m)?\\s*$").matcher(distance).matches()) {
+            throw new NumberFormatException(distance + " has wrong distance format.");
+        }
+        Pattern pattern = Pattern.compile("^\\d+");
+        Matcher matcher = pattern.matcher(distance);
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group(0));
+        }
+        throw new NumberFormatException(distance + " has wrong distance format.");
+    }
+
     private static float parsePaceToMs(String pace, int factor) {
         Pattern pattern = Pattern.compile("^[1-7]:[0-5][0-9]");
         Matcher matcher = pattern.matcher(pace);

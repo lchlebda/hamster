@@ -151,5 +151,59 @@ class UnitsTest extends Specification {
         pace << ['k4:20', ' /100m', 'aaa', 'd 5:10 /100m', '2', '3:60', '2:001', '3:000 /km', '1,54 ']
     }
 
+    @Unroll
+    def 'should parse distance in km `#distance` to #m metres'() {
+        expect:
+        Units.parseDistanceInKmToMetres(distance) == m
+
+        where:
+        distance || m
+        '12.6km' || 12600
+        '50 km'  || 50000
+        '104 '   || 104000
+        '4.6'    || 4600
+        '5 km '  || 5000
+        ''       || 0
+        '   '    || 0
+    }
+
+    @Unroll
+    def 'should throw NumberFormatException when parse distance in km `#distance` to metres'() {
+        when:
+        Units.parseDistanceInKmToMetres(distance)
+
+        then:
+        thrown(NumberFormatException)
+
+        where:
+        distance << ['k1200', ' 100m', 'aaa', 'd 45 km', '2k', 'km', '45.5m', '10,2 ']
+    }
+
+    @Unroll
+    def 'should parse distance in metres `#distance` to #m'() {
+        expect:
+        Units.parseDistanceInMetres(distance) == m
+
+        where:
+        distance || m
+        '1250m'  || 1250
+        '1500 m' || 1500
+        '3000 '  || 3000
+        ''       || 0
+        '   '    || 0
+    }
+
+    @Unroll
+    def 'should throw NumberFormatException when parse distance `#distance` to metres'() {
+        when:
+        Units.parseDistanceInMetres(distance)
+
+        then:
+        thrown(NumberFormatException)
+
+        where:
+        distance << ['k1500', ' 2300km', 'aaa', 'd 45 m', 'm', '4500.5m']
+    }
+
 }
 

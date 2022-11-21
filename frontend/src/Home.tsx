@@ -93,7 +93,7 @@ const App: FC = (): ReactElement => {
                 if (index === rowIndex) {
                     const prop = columnName as keyof typeof row;
                     const isValid = validateData(columnName, value, row)
-                    if (row[prop] != value && isValid) {
+                    if (row[prop] != value && value != '' && isValid) {
                         ActivitiesService.updateActivity(row['id'], row['type'], columnName, value);
                     }
                     if (!isValid) {
@@ -116,6 +116,9 @@ const App: FC = (): ReactElement => {
     }
 
     const validateData = (columnName: string, value: any, row: Activity) => {
+        if (value === '') {
+            return true; // I don't want to validate empty values
+        }
         if (integerFields.includes(columnName)) {
             return Number.isInteger(parseFloat(value));
         }
@@ -133,11 +136,14 @@ const App: FC = (): ReactElement => {
                 return /^[1-7]:[0-5][0-9]\s*(\/100m)?\s*$/.exec(value) != null;
             }
         }
-        if (columnName === 'distance' && ['Run', 'Ride', 'Hike', 'Walk', 'BackcountrySki'].includes(row.type)) {
-            return /^\d+(\.\d+)?\s*(km)?\s*$/.exec(value) != null;
-        }
-        if (columnName === 'distance' && row.type === 'Swim') {
-            return /^\d+\s*(m)?\s*$/.exec(value) != null;
+        if (columnName === 'distance') {
+            if (['Run', 'Ride', 'Hike', 'Walk', 'BackcountrySki'].includes(row.type)) {
+                return /^\d+(\.\d+)?\s*(km)?\s*$/.exec(value) != null;
+            } else if (row.type === 'Swim') {
+                return /^\d+\s*(m)?\s*$/.exec(value) != null;
+            } else {
+                return false; // I don't want to set distance for any other activities
+            }
         }
         return true;
     }

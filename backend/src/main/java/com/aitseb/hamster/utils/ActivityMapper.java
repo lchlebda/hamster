@@ -41,15 +41,15 @@ public final class ActivityMapper {
                 .effort((int)stravaActivity.suffer_score())
                 .elevation(Math.round(stravaActivity.total_elevation_gain()))
                 .speed(stravaActivity.average_speed())
-                .distance(stravaActivity.distance())
+                .distance((int) stravaActivity.distance())
                 .build();
     }
 
     private static String mapDistance(Activity activity) {
         return switch (activity.getSport()) {
             case WeightTraining, Workout -> "";
-            case Swim -> (int)activity.getDistance() + " m";
-            default -> Math.round(activity.getDistance()/1000*10)/10.f + " km";
+            case Swim -> activity.getDistance() + " m";
+            default -> Math.round(activity.getDistance()/1000f * 10)/10.f + " km";
         };
     }
 

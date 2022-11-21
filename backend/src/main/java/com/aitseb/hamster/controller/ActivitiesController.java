@@ -65,6 +65,7 @@ public class ActivitiesController {
             case "effort" -> activitiesRepository.updateEffort(id, Integer.valueOf(value));
             case "elevation" -> activitiesRepository.updateElevation(id, Integer.valueOf(value));
             case "speed" -> activitiesRepository.updateSpeed(id, parseSpeed(type, value));
+            case "distance" -> activitiesRepository.updateDistance(id, parseDistance(type, value));
             case "notes" -> activitiesRepository.updateNotes(id, value);
         }
         return true;
@@ -95,7 +96,15 @@ public class ActivitiesController {
             case Ride -> { return Units.kmhToMs(value); }
             case Swim -> { return Units.swimPaceToMs(value); }
         }
-        throw new RuntimeException();
+        throw new IllegalArgumentException("Speed shouldn't be set for " + type);
+    }
+
+    private int parseDistance(StravaActivityType type, String value) {
+        switch (type) {
+            case Run, Ride, Hike, Walk, BackcountrySki -> { return Units.parseDistanceInKmToMetres(value); }
+            case Swim -> { return Units.parseDistanceInMetres(value); }
+        }
+        throw new IllegalArgumentException("Distance shouldn't be set for " + type);
     }
 
 }

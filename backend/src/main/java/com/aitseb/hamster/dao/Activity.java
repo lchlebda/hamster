@@ -44,6 +44,6 @@ public class Activity {
     private int effort;
     private int elevation;
     private float speed;
-    private float distance;
+    private int distance;
     private String notes;
 }
