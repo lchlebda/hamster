@@ -2,7 +2,7 @@ import { ChangeEvent, FC, ReactElement, useEffect, useMemo, useState } from 'rea
 import './App.css';
 import { useAuth } from './authorization/AuthProvider';
 import { ActivitiesService } from './services';
-import { Column, useTable } from 'react-table';
+import { Column, useTable, useSortBy } from 'react-table';
 
 export type Activity = {
     id: number;
@@ -159,7 +159,8 @@ const App: FC = (): ReactElement => {
         rows,
         prepareRow,
         // @ts-ignore
-    } = useTable({columns, data, defaultColumn, autoResetPage: !skipPageReset, editCell})
+    } = useTable({ columns, data, defaultColumn, autoResetPage: !skipPageReset, editCell },
+                 useSortBy)
 
     useEffect(() => {
         setSkipPageReset(false)
@@ -195,10 +196,19 @@ const App: FC = (): ReactElement => {
                             <tr {...headerGroup.getHeaderGroupProps()}>
                                 {headerGroup.headers.map(column => (
                                     <th
-                                        {...column.getHeaderProps()}
+                                        // @ts-ignore
+                                        {...column.getHeaderProps(column.getSortByToggleProps())}
                                         className='table-header'
                                     >
                                         {column.render('Header')}
+                                        <span>
+                                            {
+                                                // @ts-ignore
+                                                column.isSorted ? column.isSortedDesc
+                                                    ? ' 🔽'
+                                                    : ' 🔼'
+                                                : ''}
+                                        </span>
                                     </th>
                                 ))}
                             </tr>
