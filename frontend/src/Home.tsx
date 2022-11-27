@@ -2,7 +2,13 @@ import { ChangeEvent, FC, ReactElement, useEffect, useMemo, useState } from 'rea
 import './App.css';
 import { useAuth } from './authorization/AuthProvider';
 import { ActivitiesService } from './services';
-import { Column, useTable, useSortBy } from 'react-table';
+import {
+    Column,
+    useTable,
+    useFilters,
+    useSortBy,
+    UseFiltersColumnProps
+} from 'react-table';
 
 export type Activity = {
     id: number;
@@ -45,8 +51,43 @@ const App: FC = (): ReactElement => {
     const integerFields =['time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'effort', 'elevation']
 
     const data = useMemo<Activity[]>(() => activities, [activities]);
+
+    const SelectColumnFilter = ({
+                                    column: { filterValue, setFilter, preFilteredRows, id } ,
+                                }: {column: UseFiltersColumnProps<String> & { id: string }}) => {
+        const options = useMemo(() => {
+            const options = new Set()
+            preFilteredRows.forEach(row => {
+                options.add(row.values[id])
+            })
+            // @ts-ignore
+            return [...options.values()]
+        }, [id, preFilteredRows])
+
+        return (
+            <select
+                value={filterValue}
+                onChange={e => {
+                    setFilter(e.target.value || undefined)
+                }}
+            >
+                <option value=''>All</option>
+                {options.map((option, i) => (
+                    <option key={i} value={option}>
+                        {option}
+                    </option>
+                ))}
+            </select>
+        )
+    }
+
     const cols = columnNames.map((header, index) => {
-        return {Header: header, accessor: fields[index].toString()};
+        return {
+            Header: header,
+            accessor: fields[index].toString(),
+            Filter: header === 'Sport' ? SelectColumnFilter : undefined,
+            filter: header === 'Sport' ? 'includes' : ''
+        };
     });
     const columns = useMemo<Column<Activity>[]>(() => cols as Column<Activity>[], []);
 
@@ -160,6 +201,7 @@ const App: FC = (): ReactElement => {
         prepareRow,
         // @ts-ignore
     } = useTable({ columns, data, defaultColumn, autoResetPage: !skipPageReset, editCell },
+                 useFilters,
                  useSortBy)
 
     useEffect(() => {
@@ -195,6 +237,7 @@ const App: FC = (): ReactElement => {
                         {headerGroups.map(headerGroup => (
                             <tr {...headerGroup.getHeaderGroupProps()}>
                                 {headerGroup.headers.map(column => (
+                                    <span className='table-header-div'>
                                     <th
                                         // @ts-ignore
                                         {...column.getHeaderProps(column.getSortByToggleProps())}
@@ -209,7 +252,14 @@ const App: FC = (): ReactElement => {
                                                     : ' 🔼'
                                                 : ''}
                                         </span>
+
                                     </th>
+                                        <div className='table-filter'>
+                                            {
+                                                // @ts-ignore
+                                                column.canFilter && column.Filter ? column.render('Filter') : null }
+                                        </div>
+                                    </span>
                                 ))}
                             </tr>
                         ))}
