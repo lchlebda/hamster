@@ -39,16 +39,18 @@ type IEditableCell = {
 
 const App: FC = (): ReactElement => {
 
+    const columnNames = ['Date', 'Sport', 'Title', 'Time', 'Rege time', 'HR', 'HR max', 'Cadence', 'Power', 'EF', 'TSS',
+                         'Effort', 'Elevation', 'Speed', 'Distance', 'Notes'];
+    const fields = ['date', 'type', 'title', 'time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss',
+                    'effort', 'elevation', 'speed', 'distance', 'notes'];
+    const integerFields =['time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'effort', 'elevation']
+    const filterOnInit = new Map(fields.map(obj => [obj, false]));
+
     const [activities, setActivities] = useState<Activity[]>([]);
     const [exception, setException] = useState(false);
-    const [skipPageReset, setSkipPageReset] = useState(false)
+    const [skipPageReset, setSkipPageReset] = useState(false);
+    const [filterOn, setFilterOn] = useState<Map<string, boolean>>(filterOnInit);
     const auth = useAuth();
-
-    const columnNames = ['Date', 'Sport', 'Title', 'Time', 'Rege time', 'HR', 'HR max', 'Cadence', 'Power', 'EF', 'TSS',
-        'Effort', 'Elevation', 'Speed', 'Distance', 'Notes'];
-    const fields = ['date', 'type', 'title', 'time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss',
-        'effort', 'elevation', 'speed', 'distance', 'notes'];
-    const integerFields =['time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'effort', 'elevation']
 
     const data = useMemo<Activity[]>(() => activities, [activities]);
 
@@ -81,12 +83,80 @@ const App: FC = (): ReactElement => {
         )
     }
 
+    const NumberRangeColumnFilter = ({
+                                        column: { filterValue = [], setFilter, preFilteredRows, id } ,
+                                    }: {column: UseFiltersColumnProps<String> & { id: string }}) => {
+        const [min, max] = useMemo(() => {
+            let min = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
+            let max = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
+            preFilteredRows.forEach(row => {
+                min = Math.min(row.values[id], min)
+                max = Math.max(row.values[id], max)
+            })
+            return [min, max]
+        }, [id, preFilteredRows])
+
+        return (
+            <div
+                style={{
+                    display: 'flex',
+                }}
+            >
+                <input
+                    value={filterValue[0] || ''}
+                    type='number'
+                    onChange={e => {
+                        const val = e.target.value
+                        setFilter((old = []) => [val ? parseInt(val, 10) : undefined, old[1]])
+                    }}
+                    placeholder={`${min}`}
+                    style={{
+                        width: '40px',
+                    }}
+                />
+                to
+                <input
+                    value={filterValue[1] || ''}
+                    type='number'
+                    onChange={e => {
+                        const val = e.target.value
+                        setFilter((old = []) => [old[0], val ? parseInt(val, 10) : undefined])
+                    }}
+                    placeholder={`${max}`}
+                    style={{
+                        width: '40px',
+                    }}
+                />
+            </div>
+        )
+    }
+
+    const getFilter = (header: string): Function | undefined => {
+        if (header === 'Sport') {
+            return SelectColumnFilter;
+        }
+        if (['Time', 'Rege time', 'HR', 'HR max', 'Cadence', 'Power', 'EF', 'TSS', 'Effort', 'Elevation'].includes(header)) {
+            return NumberRangeColumnFilter;
+        }
+        return undefined;
+    }
+
+    const getFilterType = (header: string): string => {
+        if (header === 'Sport') {
+            return 'includes';
+        }
+        if (['Time', 'Rege time', 'HR', 'HR max', 'Cadence', 'Power', 'EF', 'TSS', 'Effort', 'Elevation'].includes(header)) {
+            return 'between';
+        }
+        return '';
+    }
+
     const cols = columnNames.map((header, index) => {
         return {
             Header: header,
             accessor: fields[index].toString(),
-            Filter: header === 'Sport' ? SelectColumnFilter : undefined,
-            filter: header === 'Sport' ? 'includes' : ''
+            Filter: getFilter(header),
+            filter: getFilterType(header)
         };
     });
     const columns = useMemo<Column<Activity>[]>(() => cols as Column<Activity>[], []);
@@ -254,10 +324,19 @@ const App: FC = (): ReactElement => {
                                         </span>
 
                                     </th>
-                                        <div className='table-filter'>
+                                        <div className='table-filter' onClick={e => {
+                                            // @ts-ignore
+                                            if (e.target.localName !== 'input') {
+                                                // @ts-ignore
+                                                setFilterOn(new Map(fields.map(obj => {
+                                                    return [obj, (obj === column.id && !filterOn.get(column.id))
+                                                    || (obj !== column.id && filterOn.get(obj))]
+                                                })))
+                                            }
+                                        }}>
                                             {
                                                 // @ts-ignore
-                                                column.canFilter && column.Filter ? column.render('Filter') : null }
+                                                column.canFilter && column.Filter && filterOn.get(column.id) ? column.render('Filter') : null }
                                         </div>
                                     </span>
                                 ))}
