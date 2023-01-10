@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, ReactElement, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, MouseEvent, FC, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 import { useAuth } from './authorization/AuthProvider';
 import { ActivitiesService } from './services';
@@ -54,6 +54,13 @@ const App: FC = (): ReactElement => {
 
     const data = useMemo<Activity[]>(() => activities, [activities]);
 
+    const onFilterClick = (e: MouseEvent<HTMLDivElement>, setFilter: Function) => {
+        // @ts-ignore
+        if (e.target.localName !== 'input' && e.target.localName !== 'select') {
+            setFilter(undefined)
+        }
+    }
+
     const SelectColumnFilter = ({
                                     column: { filterValue, setFilter, preFilteredRows, id } ,
                                 }: {column: UseFiltersColumnProps<String> & { id: string }}) => {
@@ -67,19 +74,23 @@ const App: FC = (): ReactElement => {
         }, [id, preFilteredRows])
 
         return (
-            <select
-                value={filterValue}
-                onChange={e => {
-                    setFilter(e.target.value || undefined)
-                }}
-            >
-                <option value=''>All</option>
-                {options.map((option, i) => (
-                    <option key={i} value={option}>
-                        {option}
-                    </option>
-                ))}
-            </select>
+            <div onClick={e => {
+                onFilterClick(e, setFilter)
+            }}>
+                <select
+                    value={filterValue}
+                    onChange={e => {
+                        setFilter(e.target.value || undefined)
+                    }}
+                >
+                    <option value=''>All</option>
+                    {options.map((option, i) => (
+                        <option key={i} value={option}>
+                            {option}
+                        </option>
+                    ))}
+                </select>
+            </div>
         )
     }
 
@@ -97,11 +108,9 @@ const App: FC = (): ReactElement => {
         }, [id, preFilteredRows])
 
         return (
-            <div
-                style={{
-                    display: 'flex',
-                }}
-            >
+            <div onClick={e => {
+                onFilterClick(e, setFilter)
+            }}>
                 <input
                     value={filterValue[0] || ''}
                     type='number'
@@ -131,12 +140,72 @@ const App: FC = (): ReactElement => {
         )
     }
 
+    const SpeedRangeColumnFilter = ({
+                                         column: { filterValue = [], setFilter, preFilteredRows, id } ,
+                                     }: {column: UseFiltersColumnProps<String> & { id: string }}) => {
+        const [min, max] = useMemo(() => {
+            let min = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
+            let max = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
+            preFilteredRows.forEach(row => {
+                    min = row.values[id] < min ? row.values[id] : min
+                    max = row.values[id] > max ? row.values[id] : max
+            })
+            return [min, max]
+        }, [id, preFilteredRows])
+
+        return (
+            <div onClick={e => {
+                onFilterClick(e, setFilter)
+            }}>
+                <input
+                    value={filterValue.sort()[0]}
+                    max={filterValue.sort()[filterValue.length-1]}
+                    onBlur={e => {
+                        let filterValues: string[] = []
+                        preFilteredRows.forEach(row => {
+                            if ((e.target.value === "" || row.values[id] >= e.target.value)
+                                && (e.target.max === "" || row.values[id] <= e.target.max)) {
+                                filterValues.push(row.values[id])
+                            }
+                        })
+                        setFilter(filterValues)
+                    }}
+                    placeholder={`${min}`}
+                    style={{
+                        width: '40px',
+                    }}
+                />
+                to
+                <input
+                    min={filterValue.sort()[0]}
+                    onBlur={e => {
+                        let filterValues: string[] = []
+                        preFilteredRows.forEach(row => {
+                            if ((e.target.value === "" || row.values[id] < e.target.value)
+                                && (e.target.min === "" || row.values[id] >= e.target.min)) {
+                                filterValues.push(row.values[id])
+                            }
+                        })
+                        setFilter(filterValues)
+                    }}
+                    placeholder={`${max}`}
+                    style={{
+                        width: '40px',
+                    }}
+                />
+            </div>
+        )
+    }
+
     const getFilter = (header: string): Function | undefined => {
         if (header === 'Sport') {
             return SelectColumnFilter;
         }
         if (['Time', 'Rege time', 'HR', 'HR max', 'Cadence', 'Power', 'EF', 'TSS', 'Effort', 'Elevation'].includes(header)) {
             return NumberRangeColumnFilter;
+        }
+        if (header === 'Speed') {
+            return SpeedRangeColumnFilter;
         }
         return undefined;
     }
@@ -147,6 +216,9 @@ const App: FC = (): ReactElement => {
         }
         if (['Time', 'Rege time', 'HR', 'HR max', 'Cadence', 'Power', 'EF', 'TSS', 'Effort', 'Elevation'].includes(header)) {
             return 'between';
+        }
+        if (header === 'Speed') {
+            return 'includesSome';
         }
         return '';
     }
@@ -326,7 +398,7 @@ const App: FC = (): ReactElement => {
                                     </th>
                                         <div className='table-filter' onClick={e => {
                                             // @ts-ignore
-                                            if (e.target.localName !== 'input') {
+                                            if (e.target.localName !== 'input' && e.target.localName !== 'select') {
                                                 // @ts-ignore
                                                 setFilterOn(new Map(fields.map(obj => {
                                                     return [obj, (obj === column.id && !filterOn.get(column.id))
