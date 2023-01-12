@@ -97,6 +97,10 @@ input[type=number] {
   padding: 10px 0;
 }
 
+.table-filter input {
+  width: 40px;
+}
+
 .table-row-Ride {
   background: rgba(50, 205, 50, 0.75);
 }
