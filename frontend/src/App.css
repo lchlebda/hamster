@@ -94,11 +94,12 @@ input[type=number] {
 
 .table-filter div {
   display: flex;
-  padding: 10px 0;
+  padding: 15px 0;
 }
 
 .table-filter input {
   width: 40px;
+  height: 25px;
 }
 
 .table-row-Ride {

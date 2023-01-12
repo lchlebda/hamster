@@ -62,8 +62,28 @@ const App: FC = (): ReactElement => {
         }
     }
 
+    function DefaultColumnFilter({
+                                     column: { filterValue, setFilter },
+                                 }: {column: UseFiltersColumnProps<String> & { id: string }}) {
+        return (
+            <div onClick={e => {
+                onFilterClick(e, setFilter)
+            }}>
+                <input
+                    value={filterValue || ''}
+                    onChange={e => {
+                        setFilter(e.target.value || undefined)
+                    }}
+                    style={{
+                        width: '90px',
+                    }}
+                />
+            </div>
+        )
+    }
+
     const SelectColumnFilter = ({
-                                    column: { filterValue, setFilter, preFilteredRows, id } ,
+                                    column: { filterValue, setFilter, preFilteredRows, id },
                                 }: {column: UseFiltersColumnProps<String> & { id: string }}) => {
         const options = useMemo(() => {
             const options = new Set()
@@ -246,6 +266,9 @@ const App: FC = (): ReactElement => {
         if (header === 'Sport') {
             return SelectColumnFilter;
         }
+        if (header === 'Title' || header === 'Notes') {
+            return DefaultColumnFilter;
+        }
         if (['Time', 'Rege time', 'HR', 'HR max', 'Cadence', 'Power', 'EF', 'TSS', 'Effort', 'Elevation'].includes(header)) {
             return NumberRangeColumnFilter;
         }
@@ -261,6 +284,9 @@ const App: FC = (): ReactElement => {
     const getFilterType = (header: string): string => {
         if (header === 'Sport') {
             return 'includes';
+        }
+        if (header === 'Title' || header === 'Notes') {
+            return 'text';
         }
         if (['Time', 'Rege time', 'HR', 'HR max', 'Cadence', 'Power', 'EF', 'TSS', 'Effort', 'Elevation'].includes(header)) {
             return 'between';
