@@ -314,11 +314,14 @@ const App: FC = (): ReactElement => {
                               editCell: editCell,
                           }: IEditableCell) => {
         const [value, setValue] = useState<string>(initialValue)
-        const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const onChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
             setValue(e.target.value)
         }
         const onBlur = () => {
             editCell(index, id, value);
+        }
+        const onFocus = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
+            e.target.className = 'textarea-onfocus';
         }
         const showValueOrNothingWhenZero = () => {
             const arr = ['regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss', 'effort'];
@@ -339,8 +342,14 @@ const App: FC = (): ReactElement => {
             setValue(initialValue)
         }, [initialValue])
 
-        return id === 'date' || id === 'type' ? value
-            : <input value={ showValueOrNothingWhenZero() } onChange={ onChange } onBlur={ onBlur }/>
+        if (id === 'date' || id === 'type') {
+            return value;
+        }
+        if (id === 'title' || id === 'notes') {
+            return <textarea value={ showValueOrNothingWhenZero() } onChange={ onChange } onBlur={ onBlur } onFocus={ onFocus }/>;
+        } else {
+            return <input value={ showValueOrNothingWhenZero() } onChange={ onChange } onBlur={ onBlur }/>;
+        }
     }
 
     const editCell = (rowIndex: number, columnName: string, value: string): void => {
