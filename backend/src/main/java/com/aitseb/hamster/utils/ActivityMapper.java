@@ -15,6 +15,7 @@ public final class ActivityMapper {
                 .date(activity.getDate().toLocalDate())
                 .type(activity.getSport())
                 .title(activity.getDescription())
+                .notes(activity.getNotes())
                 .time(activity.getTime())
                 .hr(Math.round(activity.getHr()))
                 .hrMax(Math.round(activity.getHrMax()))
