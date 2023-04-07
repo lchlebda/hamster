@@ -12,7 +12,12 @@ const updateActivity = async (id: number, type: string, prop: string, value: str
     return response.json();
 }
 
+const deleteActivity = async (id: number): Promise<void> => {
+     await fetch(`/activities/delete/${id}`, { method: 'DELETE' });
+}
+
 export const ActivitiesService = {
+    deleteActivity,
     getActivities,
     updateActivity
 }

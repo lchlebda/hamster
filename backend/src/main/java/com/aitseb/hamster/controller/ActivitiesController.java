@@ -72,6 +72,11 @@ public class ActivitiesController {
         return true;
     }
 
+    @DeleteMapping("/delete/{id}")
+    public void deleteActivity(@PathVariable long id) {
+        activitiesRepository.deleteById(id);
+    }
+
     @GetMapping("/getAll")
     public ResponseEntity<List<Activity>> getActivities() {
         return ResponseEntity.ok((List<Activity>) activitiesRepository.findAll());

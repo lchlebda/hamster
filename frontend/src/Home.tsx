@@ -32,7 +32,7 @@ export type Activity = {
 
 type IEditableCell = {
     value: string,
-    row: { index: number, values: Activity },
+    row: { index: number, original: { id: number }, values: Activity },
     column: { id: string },
     editCell: Function
 }
@@ -327,6 +327,7 @@ const App: FC = (): ReactElement => {
                           setActivities(old =>
                               old.filter((row, index) => index !== tableProps.row.index)
                           )
+                          ActivitiesService.deleteActivity(tableProps.row.original.id);
                       }}>X</span>
             ),
         };
