@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, FC, ReactElement, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import './App.css';
 import { useAuth } from './authorization/AuthProvider';
 import { ActivitiesService } from './services';
@@ -6,49 +6,14 @@ import {
     Column,
     useTable,
     useFilters,
-    useSortBy,
-    UseFiltersColumnProps
+    useSortBy
 } from 'react-table';
-
-export type Activity = {
-    id: number;
-    date: string;
-    type: string;
-    title: string;
-    time: number;
-    regeTime: number;
-    hr: number;
-    hrMax: number;
-    cadence: number;
-    power: number;
-    ef: number;
-    tss: number;
-    effort: number;
-    elevation: number;
-    speed: number;
-    distance: number;
-    notes: string;
-}
-
-type IEditableCell = {
-    value: string,
-    row: { index: number, original: { id: number }, values: Activity },
-    column: { id: string },
-    editCell: Function
-}
-
-type IDeleteColumn = {
-    Header: string,
-    id: string,
-    accessor: string,
-    Filter: Function | undefined,
-    filter: string,
-    Cell: (tableProps: IEditableCell) => JSX.Element;
-}
+import { Activity, IEditableCell } from './table/Types';
+import { getFilter, getFilterType } from './table/Utils';
+import { DeleteColumn } from './table/DeleteColumn';
 
 const App: FC = (): ReactElement => {
 
-    const regexNumber = /\d+(\.\d+)?/
     const columnNames = ['Date', 'Sport', 'Title', 'Time', 'Rege time', 'HR', 'HR max', 'Cadence', 'Power', 'EF', 'TSS',
                          'Effort', 'Elevation', 'Speed', 'Distance', 'Notes'];
     const fields = ['date', 'type', 'title', 'time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss',
@@ -64,248 +29,6 @@ const App: FC = (): ReactElement => {
 
     const data = useMemo<Activity[]>(() => activities, [activities]);
 
-    const onFilterClick = (e: MouseEvent<HTMLDivElement>, setFilter: Function) => {
-        // @ts-ignore
-        if (e.target.localName !== 'input' && e.target.localName !== 'select') {
-            setFilter(undefined)
-        }
-    }
-
-    function DefaultColumnFilter({
-                                     column: { filterValue, setFilter },
-                                 }: {column: UseFiltersColumnProps<String> & { id: string }}) {
-        return (
-            <div onClick={e => {
-                onFilterClick(e, setFilter)
-            }}>
-                <input
-                    value={filterValue || ''}
-                    onChange={e => {
-                        setFilter(e.target.value || undefined)
-                    }}
-                    style={{
-                        width: '90px',
-                    }}
-                />
-            </div>
-        )
-    }
-
-    const SelectColumnFilter = ({
-                                    column: { filterValue, setFilter, preFilteredRows, id },
-                                }: {column: UseFiltersColumnProps<String> & { id: string }}) => {
-        const options = useMemo(() => {
-            const options = new Set()
-            preFilteredRows.forEach(row => {
-                options.add(row.values[id])
-            })
-            // @ts-ignore
-            return [...options.values()]
-        }, [id, preFilteredRows])
-
-        return (
-            <div onClick={e => {
-                onFilterClick(e, setFilter)
-            }}>
-                <select
-                    value={filterValue}
-                    onChange={e => {
-                        setFilter(e.target.value || undefined)
-                    }}
-                >
-                    <option value=''>All</option>
-                    {options.map((option, i) => (
-                        <option key={i} value={option}>
-                            {option}
-                        </option>
-                    ))}
-                </select>
-            </div>
-        )
-    }
-
-    const NumberRangeColumnFilter = ({
-                                        column: { filterValue = [], setFilter, preFilteredRows, id } ,
-                                    }: {column: UseFiltersColumnProps<String> & { id: string }}) => {
-        const [min, max] = useMemo(() => {
-            let min = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
-            let max = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
-            preFilteredRows.forEach(row => {
-                min = Math.min(row.values[id], min)
-                max = Math.max(row.values[id], max)
-            })
-            return [min, max]
-        }, [id, preFilteredRows])
-
-        return (
-            <div onClick={e => {
-                onFilterClick(e, setFilter)
-            }}>
-                <input
-                    value={filterValue[0] || ''}
-                    type='number'
-                    onChange={e => {
-                        const val = e.target.value
-                        setFilter((old = []) => [val ? parseInt(val, 10) : undefined, old[1]])
-                    }}
-                    placeholder={`${min}`}
-                />
-                to
-                <input
-                    value={filterValue[1] || ''}
-                    type='number'
-                    onChange={e => {
-                        const val = e.target.value
-                        setFilter((old = []) => [old[0], val ? parseInt(val, 10) : undefined])
-                    }}
-                    placeholder={`${max}`}
-                />
-            </div>
-        )
-    }
-
-    const SpeedRangeColumnFilter = ({
-                                         column: { filterValue = [], setFilter, preFilteredRows, id } ,
-                                     }: {column: UseFiltersColumnProps<String> & { id: string }}) => {
-        const [min, max] = useMemo(() => {
-            let min = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
-            let max = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
-            preFilteredRows.forEach(row => {
-                    min = row.values[id] < min ? row.values[id] : min
-                    max = row.values[id] > max ? row.values[id] : max
-            })
-            return [min, max]
-        }, [id, preFilteredRows])
-
-        return (
-            <div onClick={e => {
-                onFilterClick(e, setFilter)
-            }}>
-                <input
-                    max={filterValue.sort()[filterValue.length-1]}
-                    onBlur={e => {
-                        let filterValues: string[] = []
-                        preFilteredRows.forEach(row => {
-                            if ((e.target.value === "" || row.values[id] >= e.target.value)
-                                && (e.target.max === "" || row.values[id] <= e.target.max)) {
-                                filterValues.push(row.values[id])
-                            }
-                        })
-                        setFilter(filterValues)
-                    }}
-                    placeholder={`${min}`}
-                />
-                to
-                <input
-                    min={filterValue.sort()[0]}
-                    onBlur={e => {
-                        let filterValues: string[] = []
-                        preFilteredRows.forEach(row => {
-                            if ((e.target.value === "" || row.values[id] < e.target.value)
-                                && (e.target.min === "" || row.values[id] >= e.target.min)) {
-                                filterValues.push(row.values[id])
-                            }
-                        })
-                        setFilter(filterValues)
-                    }}
-                    placeholder={`${max}`}
-                />
-            </div>
-        )
-    }
-
-    const DistanceRangeColumnFilter = ({
-                                        column: { filterValue = [], setFilter, preFilteredRows, id } ,
-                                    }: {column: UseFiltersColumnProps<String> & { id: string }}) => {
-        const [min, max] = useMemo(() => {
-            const firstNumber = preFilteredRows[0].values[id].match(regexNumber);
-            let min = preFilteredRows.length && firstNumber !== null ? firstNumber[0] : 0
-            let max = preFilteredRows.length && firstNumber !== null ? firstNumber[0] : 0
-            preFilteredRows.forEach(row => {
-                const match = row.values[id].match(regexNumber)
-                const num = match !== null ? Number(match[0]) : 0;
-                min = num < min ? num : min
-                max = num > max ? num : max
-            })
-            return [min, max]
-        }, [id, preFilteredRows])
-
-        return (
-            <div onClick={e => {
-                onFilterClick(e, setFilter)
-            }}>
-                <input
-                    max={filterValue.sort((a: number, b: number) => a - b)[filterValue.length-1]}
-                    onBlur={e => {
-                        let filterValues: number[] = []
-                        preFilteredRows.forEach(row => {
-                            const match = row.values[id].match(regexNumber)
-                            const num = match !== null ? Number(match[0]) : 0;
-                            if ((e.target.value === "" || num >= Number(e.target.value))
-                                && (e.target.max === "" || num <= Number(e.target.max))) {
-                                filterValues.push(num)
-                            }
-                        })
-                        setFilter(filterValues)
-                    }}
-                    placeholder={`${min}`}
-                />
-                to
-                <input
-                    min={filterValue.sort((a: number, b: number) => a - b)[0]}
-                    onBlur={e => {
-                        let filterValues: number[] = []
-                        preFilteredRows.forEach(row => {
-                            const match = row.values[id].match(regexNumber)
-                            const num = match !== null ? Number(match[0]) : 0;
-                            if ((e.target.value === "" || num < Number(e.target.value))
-                                && (e.target.min === "" || num >= Number(e.target.min))) {
-                                filterValues.push(num)
-                            }
-                        })
-                        setFilter(filterValues)
-                    }}
-                    placeholder={`${max}`}
-                />
-            </div>
-        )
-    }
-
-    const getFilter = (header: string): Function | undefined => {
-        if (header === 'Sport') {
-            return SelectColumnFilter;
-        }
-        if (header === 'Title' || header === 'Notes') {
-            return DefaultColumnFilter;
-        }
-        if (['Time', 'Rege time', 'HR', 'HR max', 'Cadence', 'Power', 'EF', 'TSS', 'Effort', 'Elevation'].includes(header)) {
-            return NumberRangeColumnFilter;
-        }
-        if (header === 'Speed') {
-            return SpeedRangeColumnFilter;
-        }
-        if (header === 'Distance') {
-            return DistanceRangeColumnFilter;
-        }
-        return undefined;
-    }
-
-    const getFilterType = (header: string): string => {
-        if (header === 'Sport') {
-            return 'includes';
-        }
-        if (header === 'Title' || header === 'Notes') {
-            return 'text';
-        }
-        if (['Time', 'Rege time', 'HR', 'HR max', 'Cadence', 'Power', 'EF', 'TSS', 'Effort', 'Elevation'].includes(header)) {
-            return 'between';
-        }
-        if (header === 'Speed' || header === 'Distance') {
-            return 'includesSome';
-        }
-        return '';
-    }
-
     const cols = columnNames.map((header, index) => {
         return {
             Header: header,
@@ -314,24 +37,8 @@ const App: FC = (): ReactElement => {
             filter: getFilterType(header)
         };
     });
-    const deleteCol: IDeleteColumn = {
-            Header: '',
-            id: 'delete',
-            accessor: 'delete',
-            Filter: undefined,
-            filter: '',
 
-            Cell: (tableProps: IEditableCell) => (
-                <span className='delete-cell'
-                      onClick={() => {
-                          setActivities(old =>
-                              old.filter((row, index) => index !== tableProps.row.index)
-                          )
-                          ActivitiesService.deleteActivity(tableProps.row.original.id);
-                      }}>X</span>
-            ),
-        };
-    cols.unshift(deleteCol);
+    cols.unshift(DeleteColumn(setActivities));
     const columns = useMemo<Column<Activity>[]>(() => cols as Column<Activity>[], []);
 
     const EditableCell = ({
