@@ -89,6 +89,12 @@ input[type=number] {
   display: table-cell;
 }
 
+.delete-cell {
+  cursor: pointer;
+  font-size: large;
+  padding: 10px 0 10px 0;
+}
+
 .table textarea {
   padding: 0;
   margin: 0;

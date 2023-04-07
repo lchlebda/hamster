@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, FC, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, MouseEvent, FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import './App.css';
 import { useAuth } from './authorization/AuthProvider';
 import { ActivitiesService } from './services';
@@ -35,6 +35,15 @@ type IEditableCell = {
     row: { index: number, values: Activity },
     column: { id: string },
     editCell: Function
+}
+
+type IDeleteColumn = {
+    Header: string,
+    id: string,
+    accessor: string,
+    Filter: Function | undefined,
+    filter: string,
+    Cell: (tableProps: IEditableCell) => JSX.Element;
 }
 
 const App: FC = (): ReactElement => {
@@ -305,6 +314,23 @@ const App: FC = (): ReactElement => {
             filter: getFilterType(header)
         };
     });
+    const deleteCol: IDeleteColumn = {
+            Header: '',
+            id: 'delete',
+            accessor: 'delete',
+            Filter: undefined,
+            filter: '',
+
+            Cell: (tableProps: IEditableCell) => (
+                <span className='delete-cell'
+                      onClick={() => {
+                          setActivities(old =>
+                              old.filter((row, index) => index !== tableProps.row.index)
+                          )
+                      }}>X</span>
+            ),
+        };
+    cols.unshift(deleteCol);
     const columns = useMemo<Column<Activity>[]>(() => cols as Column<Activity>[], []);
 
     const EditableCell = ({
