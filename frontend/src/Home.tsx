@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, ReactElement, useEffect, useMemo, useState } from 'react';
+import { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import './App.css';
 import { useAuth } from './authorization/AuthProvider';
 import { ActivitiesService } from './services';
@@ -8,9 +8,10 @@ import {
     useFilters,
     useSortBy
 } from 'react-table';
-import { Activity, IEditableCell } from './table/Types';
-import { getFilter, getFilterType } from './table/Utils';
+import { Activity } from './table/Types';
+import {getFilter, getFilterType, validateData} from './table/Utils';
 import { DeleteColumn } from './table/DeleteColumn';
+import { EditableCell } from './table/EditableCell';
 
 const App: FC = (): ReactElement => {
 
@@ -18,7 +19,6 @@ const App: FC = (): ReactElement => {
                          'Effort', 'Elevation', 'Speed', 'Distance', 'Notes'];
     const fields = ['date', 'type', 'title', 'time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss',
                     'effort', 'elevation', 'speed', 'distance', 'notes'];
-    const integerFields =['time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'effort', 'elevation']
     const filterOnInit = new Map(fields.map(obj => [obj, false]));
 
     const [activities, setActivities] = useState<Activity[]>([]);
@@ -40,51 +40,6 @@ const App: FC = (): ReactElement => {
 
     cols.unshift(DeleteColumn(setActivities));
     const columns = useMemo<Column<Activity>[]>(() => cols as Column<Activity>[], []);
-
-    const EditableCell = ({
-                              value: initialValue,
-                              row: { index, values },
-                              column: { id },
-                              editCell: editCell,
-                          }: IEditableCell) => {
-        const [value, setValue] = useState<string>(initialValue)
-        const onChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
-            setValue(e.target.value)
-        }
-        const onBlur = () => {
-            editCell(index, id, value);
-        }
-        const onFocus = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
-            e.target.className = 'textarea-onfocus';
-        }
-        const showValueOrNothingWhenZero = () => {
-            const arr = ['regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss', 'effort'];
-            // @ts-ignore
-            if (value == false && arr.includes(id)) {
-                return '';
-            }
-            if (id === 'elevation') {
-                if (values.type !== 'Run' && values.type !== 'Ride' && !initialValue) {
-                    return '';
-                }
-            }
-
-            return value;
-        }
-
-        useEffect(() => {
-            setValue(initialValue)
-        }, [initialValue])
-
-        if (id === 'date' || id === 'type') {
-            return value;
-        }
-        if (id === 'title' || id === 'notes') {
-            return <textarea value={ showValueOrNothingWhenZero() } onChange={ onChange } onBlur={ onBlur } onFocus={ onFocus }/>;
-        } else {
-            return <input value={ showValueOrNothingWhenZero() } onChange={ onChange } onBlur={ onBlur }/>;
-        }
-    }
 
     const editCell = (rowIndex: number, columnName: string, value: string): void => {
         setSkipPageReset(true)
@@ -113,39 +68,6 @@ const App: FC = (): ReactElement => {
                 return row
             })
         )
-    }
-
-    const validateData = (columnName: string, value: any, row: Activity) => {
-        if (value === '') {
-            return true; // I don't want to validate empty values
-        }
-        if (integerFields.includes(columnName)) {
-            return Number.isInteger(parseFloat(value));
-        }
-        if (['ef', 'tss'].includes(columnName)) {
-            return !isNaN(value);
-        }
-        if (columnName === 'speed') {
-            if (!['Run', 'Ride', 'Swim'].includes(row.type)) {
-                return false; // I don't want to set speed for any other activities besides run, ride and swim
-            } else if (row.type === 'Run') {
-                return /^[1-7]:[0-5][0-9]\s*(\/km)?\s*$/.exec(value) != null;
-            } else if (row.type === 'Ride') {
-                return /^\d+(\.\d+)?\s*(km\/h)?\s*$/.exec(value) != null;
-            } else if (row.type === 'Swim') {
-                return /^[1-7]:[0-5][0-9]\s*(\/100m)?\s*$/.exec(value) != null;
-            }
-        }
-        if (columnName === 'distance') {
-            if (['Run', 'Ride', 'Hike', 'Walk', 'BackcountrySki'].includes(row.type)) {
-                return /^\d+(\.\d+)?\s*(km)?\s*$/.exec(value) != null;
-            } else if (row.type === 'Swim') {
-                return /^\d+\s*(m)?\s*$/.exec(value) != null;
-            } else {
-                return false; // I don't want to set distance for any other activities
-            }
-        }
-        return true;
     }
 
     const defaultColumn = {
