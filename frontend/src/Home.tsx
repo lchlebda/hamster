@@ -9,7 +9,7 @@ import {
     useSortBy
 } from 'react-table';
 import { Activity } from './table/Types';
-import {getFilter, getFilterType, validateData} from './table/Utils';
+import { getFilter, getFilterType, validateData } from './table/Utils';
 import { DeleteColumn } from './table/DeleteColumn';
 import { EditableCell } from './table/EditableCell';
 
@@ -109,7 +109,7 @@ const App: FC = (): ReactElement => {
 
     return (
         <div className='App'>
-            <h1>Welcome to Hamster App!</h1>
+            <h1>Welcome to Activities App!</h1>
             <header className='App-header'>
                 { exception && <div className='strava-exception'>Strava service is currently unavailable, cannot get the most recent data.</div> }
                 <div>
