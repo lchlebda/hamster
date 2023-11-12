@@ -17,7 +17,7 @@ const Login: FC = (): ReactElement => {
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search.replace('amp;amp;', ''));
         const code = urlParams.get('code');
-        const clientId = urlParams.get('client_id');
+        const clientId = '74001'; //urlParams.get('client_id');
         const clientSecret = urlParams.get('client_secret');
         if (!code || !clientId || !clientSecret) {
             return;
