@@ -6,7 +6,8 @@ const Layout: FC = (): ReactElement =>  {
     return (
         <div>
             <AuthStatus />
-            <Link to="/">Home</Link>
+            <Link to="/">Home</Link><br/>
+            <Link to="/weekView">Week view</Link>
             <Outlet />
         </div>
     );
