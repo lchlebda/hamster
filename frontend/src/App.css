@@ -145,6 +145,12 @@ input[type=number] {
   background: rgba(0, 191, 255, 0.75);
 }
 
+.table-row-week {
+  background: rgba(76, 0, 0, 0.75);
+  height: 44px;
+  color: white;
+}
+
 .table-row-clicked {
   border-color: blue;
   border-width: 2px;

@@ -119,6 +119,7 @@ const WeekView: FC = (): ReactElement => {
                         {rows.map(row => {
                             prepareRow(row)
                             return (
+                                <>
                                 <tr {...row.getRowProps()} className={`table-row-${row.values.type}`}>
                                     {row.cells.map(cell => {
                                         return (
@@ -128,6 +129,8 @@ const WeekView: FC = (): ReactElement => {
                                         )
                                     })}
                                 </tr>
+                                {row.original.id % 7 === 0 && <tr className='table-row-week'><td/><td/></tr>}
+                                </>
                             )
                         })}
                         </tbody>
