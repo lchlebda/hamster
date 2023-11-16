@@ -2,17 +2,24 @@ package com.aitseb.hamster.utils;
 
 import com.aitseb.hamster.dao.Activity;
 import com.aitseb.hamster.dto.ActivityDTO;
+import com.aitseb.hamster.dto.DayOfWeekLowerCase;
 import com.aitseb.hamster.dto.StravaActivity;
+
+import java.time.LocalDate;
 
 import static com.aitseb.hamster.utils.Units.*;
 
 public final class ActivityMapper {
 
     public static ActivityDTO fromDAOToDTO(Activity activity) {
+
+        LocalDate date = activity.getDate().toLocalDate();
+
         return ActivityDTO.builder()
                 .id(activity.getId())
                 .stravaId(activity.getStravaId())
-                .date(activity.getDate().toLocalDate())
+                .date(date)
+                .dayOfWeek(DayOfWeekLowerCase.getFor(date.getDayOfWeek()))
                 .type(activity.getSport())
                 .title(activity.getDescription())
                 .notes(activity.getNotes())
