@@ -1,6 +1,7 @@
 export type Activity = {
     id: number;
     date: string;
+    dayOfWeek: string;
     type: string;
     title: string;
     time: number;

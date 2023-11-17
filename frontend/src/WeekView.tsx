@@ -13,9 +13,9 @@ import { EditableCell } from './table/EditableCell';
 
 const WeekView: FC = (): ReactElement => {
 
-    const columnNames = ['Date', 'Sport', 'Title', 'Time', 'Rege time', 'HR', 'HR max', 'Cadence', 'Power', 'EF', 'TSS',
+    const columnNames = ['Date', 'Day', 'Sport', 'Title', 'Time', 'Rege time', 'HR', 'HR max', 'Cadence', 'Power', 'EF', 'TSS',
         'Effort', 'Elevation', 'Speed', 'Distance', 'Notes'];
-    const fields = ['date', 'type', 'title', 'time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss',
+    const fields = ['date', 'dayOfWeek', 'type', 'title', 'time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss',
         'effort', 'elevation', 'speed', 'distance', 'notes'];
 
     const [activities, setActivities] = useState<Activity[]>([]);
