@@ -66,7 +66,15 @@ input[type=number] {
   margin: 0;
   border: 0;
   background: none;
+  width: 40px;
+}
+
+.table-cell.speed input {
   width: 80px;
+}
+
+.table-cell.distance input {
+  width: 60px;
 }
 
 .table-cell-not-valid input {
@@ -74,7 +82,15 @@ input[type=number] {
   margin: 0;
   border: 0;
   background: none;
+  width: 40px;
+}
+
+.table-cell-not-valid.speed input {
   width: 80px;
+}
+
+.table-cell-not-valid.distance input {
+  width: 60px;
 }
 
 .table-header {
@@ -111,7 +127,7 @@ input[type=number] {
   background: none;
   resize: vertical;
   font-size: xx-small;
-  width: 110px;
+  width: 200px;
   vertical-align: middle;
 }
 

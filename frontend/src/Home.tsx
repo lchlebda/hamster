@@ -15,9 +15,9 @@ import { EditableCell } from './table/EditableCell';
 
 const App: FC = (): ReactElement => {
 
-    const columnNames = ['Date', 'Sport', 'Title', 'Time', 'Rege time', 'HR', 'HR max', 'Cadence', 'Power', 'EF', 'TSS',
-                         'Effort', 'Elevation', 'Speed', 'Distance', 'Notes'];
-    const fields = ['date', 'type', 'title', 'time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss',
+    const columnNames = ['Date', 'Day', 'Sport', 'Title', 'Time', 'Rege', 'HR', 'HRm', 'Cad', 'Pow', 'EF', 'TSS',
+                         'Effort', 'Elev', 'Speed', 'Dist', 'Notes'];
+    const fields = ['date', 'dayOfWeek', 'type', 'title', 'time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss',
                     'effort', 'elevation', 'speed', 'distance', 'notes'];
     const filterOnInit = new Map(fields.map(obj => [obj, false]));
 
@@ -53,10 +53,10 @@ const App: FC = (): ReactElement => {
                     }
                     if (!isValid) {
                         // @ts-ignore
-                        document.getElementById(`cell_${index}_${columnName}`).setAttribute('class', 'table-cell-not-valid');
+                        document.getElementById(`cell_${index}_${columnName}`).setAttribute('class', 'table-cell-not-valid ' + columnName);
                     } else {
                         // @ts-ignore
-                        document.getElementById(`cell_${index}_${columnName}`).setAttribute('class', 'table-cell');
+                        document.getElementById(`cell_${index}_${columnName}`).setAttribute('class', 'table-cell ' + columnName);
                     }
                     if (isValid) {
                         return {
@@ -161,7 +161,7 @@ const App: FC = (): ReactElement => {
                                 <tr {...row.getRowProps()} className={`table-row-${row.values.type}`}>
                                     {row.cells.map(cell => {
                                         return (
-                                            <td {...cell.getCellProps()} className='table-cell' id={`${cell.getCellProps().key}`}>
+                                            <td {...cell.getCellProps()} className={`table-cell ${cell.column.id}`} id={`${cell.getCellProps().key}`}>
                                                 {cell.render('Cell')}
                                             </td>
                                         )

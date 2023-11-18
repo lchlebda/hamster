@@ -36,7 +36,7 @@ export const EditableCell = ({
         setValue(initialValue)
     }, [initialValue])
 
-    if (id === 'date' || id === 'type') {
+    if (id === 'date' || id === 'dayOfWeek' || id === 'type') {
         return value;
     }
     if (id === 'title' || id === 'notes') {
