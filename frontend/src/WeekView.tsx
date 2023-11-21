@@ -6,7 +6,7 @@ import {
     Column,
     useTable
 } from 'react-table';
-import { Activity } from './table/Types';
+import { ActivitiesPerWeek, Activity } from './table/Types';
 import { validateData } from './table/Utils';
 import { DeleteColumn } from './table/DeleteColumn';
 import { EditableCell } from './table/EditableCell';
@@ -77,13 +77,15 @@ const WeekView: FC = (): ReactElement => {
         // @ts-ignore
     } = useTable({ columns, data, defaultColumn, autoResetPage: !skipPageReset, editCell })
 
+    let year = 2023;
+
     useEffect(() => {
         setSkipPageReset(false)
     }, [data])
 
     useEffect((): void => {
-        function getActivities(): Promise<Activity[]> {
-            return ActivitiesService.getActivities(auth.token).then((response) => {
+        function getActivitiesAndWeekSummaries(): Promise<ActivitiesPerWeek> {
+            return ActivitiesService.getActivitiesPerWeek(auth.token, year).then((response) => {
                 if (response.status === 206) {
                     setException(true);
                 }
@@ -94,8 +96,20 @@ const WeekView: FC = (): ReactElement => {
             }));
         }
 
-        getActivities().then((body) => {
-            setActivities(body);
+        getActivitiesAndWeekSummaries().then((body) => {
+            let activitiesPerWeek = [];
+            let k = 0;
+            for (let i = 0; i < body.activities.length-1; i++) {
+                if (body.activities[i+1].weekOfYear != body.activities[i].weekOfYear) {
+                    activitiesPerWeek.push({...body.activities[i], weekSummary: body.weekSummaries[k++]});
+                } else {
+                    activitiesPerWeek.push(body.activities[i]);
+                }
+            }
+            if (body.activities.length !== 0) {
+                activitiesPerWeek.push({...body.activities[body.activities.length-1], weekSummary: body.weekSummaries[k]});
+            }
+            setActivities(activitiesPerWeek);
         })
     }, []);
 
@@ -129,7 +143,7 @@ const WeekView: FC = (): ReactElement => {
                                         )
                                     })}
                                 </tr>
-                                {row.original.id % 7 === 0 && <tr className='table-row-week'><td/><td/></tr>}
+                                    { row.original.weekSummary && <tr className='table-row-week'><td/><td/></tr> }
                                 </>
                             )
                         })}

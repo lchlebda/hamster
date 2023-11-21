@@ -1,6 +1,7 @@
 export type Activity = {
     id: number;
     date: string;
+    weekOfYear: number;
     dayOfWeek: string;
     type: string;
     title: string;
@@ -17,6 +18,22 @@ export type Activity = {
     speed: number;
     distance: number;
     notes: string;
+    weekSummary: WeekSummary;
+}
+
+export type WeekSummary = {
+    weekOfYear: number;
+    activityHours: number;
+    regeHours: number;
+    ef: number;
+    tss: number;
+    elevation: number;
+    distance: number;
+}
+
+export type ActivitiesPerWeek = {
+    activities: Activity[];
+    weekSummaries: WeekSummary[];
 }
 
 export type IEditableCell = {

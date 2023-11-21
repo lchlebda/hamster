@@ -1,13 +1,12 @@
 package com.aitseb.hamster.controller;
 
 import com.aitseb.hamster.dao.Activity;
-import com.aitseb.hamster.dto.ActivityDTO;
-import com.aitseb.hamster.dto.StravaActivity;
-import com.aitseb.hamster.dto.StravaActivityType;
+import com.aitseb.hamster.dto.*;
 import com.aitseb.hamster.exception.StravaException;
 import com.aitseb.hamster.repository.ActivitiesRepository;
 import com.aitseb.hamster.repository.StravaActivitiesRepository;
 import com.aitseb.hamster.utils.ActivityMapper;
+import com.aitseb.hamster.utils.DateHelper;
 import com.aitseb.hamster.utils.Units;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,8 +15,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 @RestController
@@ -45,6 +46,39 @@ public class ActivitiesController {
 
         return stravaWorks ? ResponseEntity.ok(list)
                            : ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(list);
+    }
+
+    @GetMapping("/year/{year}/perWeek")
+    public ResponseEntity<WeekViewDTO> getActivitiesPerWeek(@RequestHeader(name = "ACCESS_TOKEN") String accessToken,
+                                                            @PathVariable int year) {
+        boolean stravaWorks = true;
+        try {
+            getAndSaveLatestStravaActivities(accessToken);
+        } catch (StravaException exc) {
+            stravaWorks = false;
+        }
+
+        List<ActivityDTO> activities = ((List<Activity>) activitiesRepository.findAll())
+                .stream()
+                .filter(activity -> activity.getDate().toLocalDate().isAfter(DateHelper.weekViewYearStartsAfter(year)) &&
+                                    activity.getDate().toLocalDate().isBefore(DateHelper.weekViewYearEndsBefore(year)))
+                .sorted(comparing(Activity::getDate).reversed())
+                .map(ActivityMapper::fromDAOToDTO)
+                .collect(toList());
+
+        List<WeekSummary> weekSummaryList = activities.stream().collect(
+                Collectors.collectingAndThen(
+                        groupingBy(ActivityDTO::weekOfYear),
+                        l -> l.entrySet().stream()
+                                .map(e -> ActivityMapper.createWeekSummary(e.getValue(), e.getKey()))
+                                .sorted(comparing(WeekSummary::weekOfYear).reversed())
+                                .collect(toList())
+                ));
+
+        WeekViewDTO weekViewDTO = new WeekViewDTO(activities, weekSummaryList);
+
+        return stravaWorks ? ResponseEntity.ok(weekViewDTO)
+                : ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(weekViewDTO);
     }
 
     @PostMapping("/update/{id}")

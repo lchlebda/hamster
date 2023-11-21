@@ -6,6 +6,14 @@ const getActivities = async (token: string): Promise<Response> => {
     });
 }
 
+const getActivitiesPerWeek = async (token: string, year: number): Promise<Response> => {
+    return await fetch(`/activities/year/${year}/perWeek`, {
+        headers: {
+            'ACCESS_TOKEN': token,
+        }
+    });
+}
+
 const updateActivity = async (id: number, type: string, prop: string, value: string): Promise<boolean> => {
     const response = await fetch(`/activities/update/${id}?` + new URLSearchParams({type, prop, value}),
                                  { method: 'POST' });
@@ -19,5 +27,6 @@ const deleteActivity = async (id: number): Promise<void> => {
 export const ActivitiesService = {
     deleteActivity,
     getActivities,
+    getActivitiesPerWeek,
     updateActivity
 }

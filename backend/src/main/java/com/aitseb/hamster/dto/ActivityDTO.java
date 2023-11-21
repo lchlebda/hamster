@@ -7,6 +7,7 @@ import java.time.LocalDate;
 public record ActivityDTO(long id,
                           long stravaId,
                           LocalDate date,
+                          int weekOfYear,
                           DayOfWeekLowerCase dayOfWeek,
                           StravaActivityType type,
                           String title,

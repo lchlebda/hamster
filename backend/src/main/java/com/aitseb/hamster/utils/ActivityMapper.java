@@ -4,8 +4,11 @@ import com.aitseb.hamster.dao.Activity;
 import com.aitseb.hamster.dto.ActivityDTO;
 import com.aitseb.hamster.dto.DayOfWeekLowerCase;
 import com.aitseb.hamster.dto.StravaActivity;
+import com.aitseb.hamster.dto.WeekSummary;
 
 import java.time.LocalDate;
+import java.time.temporal.WeekFields;
+import java.util.List;
 
 import static com.aitseb.hamster.utils.Units.*;
 
@@ -19,6 +22,7 @@ public final class ActivityMapper {
                 .id(activity.getId())
                 .stravaId(activity.getStravaId())
                 .date(date)
+                .weekOfYear(date.get(WeekFields.ISO.weekOfYear()))
                 .dayOfWeek(DayOfWeekLowerCase.getFor(date.getDayOfWeek()))
                 .type(activity.getSport())
                 .title(activity.getDescription())
@@ -51,6 +55,10 @@ public final class ActivityMapper {
                 .speed(stravaActivity.average_speed())
                 .distance((int) stravaActivity.distance())
                 .build();
+    }
+
+    public static WeekSummary createWeekSummary(List<ActivityDTO> activities, int week) {
+        return new WeekSummary(week, 10, 2, 200, 300, 3400, 45);
     }
 
     private static String mapDistance(Activity activity) {
