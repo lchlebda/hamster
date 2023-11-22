@@ -1,10 +1,8 @@
 package com.aitseb.hamster.utils;
 
 import com.aitseb.hamster.dao.Activity;
-import com.aitseb.hamster.dto.ActivityDTO;
-import com.aitseb.hamster.dto.DayOfWeekLowerCase;
-import com.aitseb.hamster.dto.StravaActivity;
-import com.aitseb.hamster.dto.WeekSummary;
+import com.aitseb.hamster.dto.*;
+import org.decimal4j.util.DoubleRounder;
 
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
@@ -58,7 +56,18 @@ public final class ActivityMapper {
     }
 
     public static WeekSummary createWeekSummary(List<ActivityDTO> activities, int week) {
-        return new WeekSummary(week, 10, 2, 200, 300, 3400, 45);
+        int activityHoursSum = activities.stream().mapToInt(ActivityDTO::time).sum();
+        int regeHoursSum = activities.stream().mapToInt(ActivityDTO::regeTime).sum();
+        int effortSum = activities.stream().mapToInt(ActivityDTO::effort).sum();
+        float tssSum = (float) activities.stream().mapToDouble(ActivityDTO::tss).sum();
+        int elevationSum = activities.stream().mapToInt(ActivityDTO::elevation).sum();
+        int distanceInMetersSum = activities.stream().mapToInt(ActivityMapper::mapDistanceInMetersFromDTO).sum();
+
+        return new WeekSummary(week,
+                (float) DoubleRounder.round((float)activityHoursSum/60, 2),
+                (float) DoubleRounder.round((float) regeHoursSum/60, 2),
+                effortSum, tssSum, elevationSum,
+                (float) DoubleRounder.round((float) distanceInMetersSum/1000, 1));
     }
 
     private static String mapDistance(Activity activity) {
@@ -76,5 +85,13 @@ public final class ActivityMapper {
             case Swim -> msToSwimPace(activity.getSpeed()) + "/100m";
             default -> "";
         };
+    }
+
+    private static int mapDistanceInMetersFromDTO(ActivityDTO activity) {
+        if (activity.type().equals(StravaActivityType.Swim)) {
+            return Units.parseDistanceInMetres(activity.distance());
+        } else {
+            return Units.parseDistanceInKmToMetres(activity.distance());
+        }
     }
 }
