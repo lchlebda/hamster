@@ -143,7 +143,18 @@ const WeekView: FC = (): ReactElement => {
                                         )
                                     })}
                                 </tr>
-                                    { row.original.weekSummary && <tr className='table-row-week'><td/><td/></tr> }
+                                    { row.original.weekSummary &&
+                                    <tr className='table-row-week'>
+                                        <td>{ row.original.weekSummary.weekOfYear }</td>
+                                        <td/><td/><td/><td/>
+                                        <td>{ row.original.weekSummary.activityHours }</td>
+                                        <td>{ row.original.weekSummary.regeHours }</td>
+                                        <td/><td/><td/><td/><td/>
+                                        <td>{ row.original.weekSummary.tss }</td>
+                                        <td>{ row.original.weekSummary.effort }</td>
+                                        <td>{ row.original.weekSummary.elevation }</td>
+                                        <td/><td>{ row.original.weekSummary.distance }</td><td/>
+                                    </tr> }
                                 </>
                             )
                         })}

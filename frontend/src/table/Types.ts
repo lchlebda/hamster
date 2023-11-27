@@ -25,7 +25,7 @@ export type WeekSummary = {
     weekOfYear: number;
     activityHours: number;
     regeHours: number;
-    ef: number;
+    effort: number;
     tss: number;
     elevation: number;
     distance: number;

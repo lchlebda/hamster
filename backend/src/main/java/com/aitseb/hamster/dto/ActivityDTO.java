@@ -25,4 +25,8 @@ public record ActivityDTO(long id,
                           String distance,
                           String notes) {
     @Builder public ActivityDTO {} // this default constructor is workaround for bug: https://youtrack.jetbrains.com/issue/IDEA-266513/Problem-with-lombok-Builder-and-record
+
+    public String yearWeekKey() {
+        return date.getYear() + "_" + weekOfYear;
+    }
 }

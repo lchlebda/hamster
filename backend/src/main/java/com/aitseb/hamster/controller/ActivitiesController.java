@@ -68,10 +68,10 @@ public class ActivitiesController {
 
         List<WeekSummary> weekSummaryList = activities.stream().collect(
                 Collectors.collectingAndThen(
-                        groupingBy(ActivityDTO::weekOfYear),
-                        l -> l.entrySet().stream()
-                                .map(e -> ActivityMapper.createWeekSummary(e.getValue(), e.getKey()))
-                                .sorted(comparing(WeekSummary::weekOfYear).reversed())
+                        groupingBy(ActivityDTO::yearWeekKey),
+                        l -> l.values().stream()
+                                .map(ActivityMapper::createWeekSummary)
+                                .sorted(comparing(WeekSummary::key).reversed())
                                 .collect(toList())
                 ));
 

@@ -15,12 +15,13 @@ public final class ActivityMapper {
     public static ActivityDTO fromDAOToDTO(Activity activity) {
 
         LocalDate date = activity.getDate().toLocalDate();
+        int weekOfYear = weekOfYear(date);
 
         return ActivityDTO.builder()
                 .id(activity.getId())
                 .stravaId(activity.getStravaId())
                 .date(date)
-                .weekOfYear(date.get(WeekFields.ISO.weekOfYear()))
+                .weekOfYear(weekOfYear)
                 .dayOfWeek(DayOfWeekLowerCase.getFor(date.getDayOfWeek()))
                 .type(activity.getSport())
                 .title(activity.getDescription())
@@ -55,7 +56,7 @@ public final class ActivityMapper {
                 .build();
     }
 
-    public static WeekSummary createWeekSummary(List<ActivityDTO> activities, int week) {
+    public static WeekSummary createWeekSummary(List<ActivityDTO> activities) {
         int activityHoursSum = activities.stream().mapToInt(ActivityDTO::time).sum();
         int regeHoursSum = activities.stream().mapToInt(ActivityDTO::regeTime).sum();
         int effortSum = activities.stream().mapToInt(ActivityDTO::effort).sum();
@@ -63,11 +64,22 @@ public final class ActivityMapper {
         int elevationSum = activities.stream().mapToInt(ActivityDTO::elevation).sum();
         int distanceInMetersSum = activities.stream().mapToInt(ActivityMapper::mapDistanceInMetersFromDTO).sum();
 
-        return new WeekSummary(week,
+        return new WeekSummary(activities.get(0).weekOfYear(), activities.get(0).date().getYear(),
                 (float) DoubleRounder.round((float)activityHoursSum/60, 2),
                 (float) DoubleRounder.round((float) regeHoursSum/60, 2),
                 effortSum, tssSum, elevationSum,
                 (float) DoubleRounder.round((float) distanceInMetersSum/1000, 1));
+    }
+
+    private static int weekOfYear(LocalDate date) {
+        int weekOfYear = date.get(WeekFields.ISO.weekOfYear());
+        if (weekOfYear == 0) {
+            LocalDate yearBefore = date.minusYears(1);
+            LocalDate lastDayOfYearBefore = LocalDate.ofYearDay(yearBefore.getYear(), yearBefore.lengthOfYear());
+            weekOfYear = lastDayOfYearBefore.get(WeekFields.ISO.weekOfYear());
+        }
+
+        return weekOfYear;
     }
 
     private static String mapDistance(Activity activity) {
