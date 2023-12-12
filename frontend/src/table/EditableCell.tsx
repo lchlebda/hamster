@@ -40,7 +40,7 @@ export const EditableCell = ({
         return value;
     }
     if (id === 'title' || id === 'notes') {
-        return <textarea value={ showValueOrNothingWhenZero() } onChange={ onChange } onBlur={ onBlur } onFocus={ onFocus }/>;
+        return <textarea className={`${id}`} value={ showValueOrNothingWhenZero() } onChange={ onChange } onBlur={ onBlur } onFocus={ onFocus }/>;
     } else {
         return <input value={ showValueOrNothingWhenZero() } onChange={ onChange } onBlur={ onBlur }/>;
     }

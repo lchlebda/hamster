@@ -120,13 +120,24 @@ input[type=number] {
   left: 10px !important;
 }
 
-.table textarea {
+.table .notes textarea {
   padding: 0;
   margin: 0;
   border: 0;
   background: none;
   resize: vertical;
   font-size: xx-small;
+  width: 310px;
+  vertical-align: middle;
+}
+
+.table .title textarea {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  resize: vertical;
+  font-size: small;
   width: 200px;
   vertical-align: middle;
 }
