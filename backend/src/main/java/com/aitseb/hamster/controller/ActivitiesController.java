@@ -9,11 +9,14 @@ import com.aitseb.hamster.utils.ActivityMapper;
 import com.aitseb.hamster.utils.DateHelper;
 import com.aitseb.hamster.utils.Units;
 import lombok.RequiredArgsConstructor;
+import org.decimal4j.util.DoubleRounder;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,7 +74,7 @@ public class ActivitiesController {
                         groupingBy(ActivityDTO::yearWeekKey),
                         l -> l.values().stream()
                                 .map(ActivityMapper::createWeekSummary)
-                                .sorted(comparing(WeekSummary::key).reversed())
+                                .sorted(comparing(WeekSummary::year).thenComparing(WeekSummary::weekOfYear).reversed())
                                 .collect(toList())
                 ));
 
@@ -80,6 +83,22 @@ public class ActivitiesController {
         return stravaWorks ? ResponseEntity.ok(weekViewDTO)
                 : ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(weekViewDTO);
     }
+
+        @GetMapping("/year/{year}/week/{week}/summary/{prop}")
+    public ResponseEntity<Double> getWeekSummaryForProp(
+            @PathVariable String prop,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+
+        double sum = ((List<Activity>) activitiesRepository.findAll())
+                .stream()
+                .filter(activity -> activity.getDate().toLocalDate().isAfter(date.minusDays(date.getDayOfWeek().getValue())) &&
+                        activity.getDate().toLocalDate().isBefore(date.plusDays(7-date.getDayOfWeek().ordinal())))
+                .mapToDouble(activity -> getValueForProp(activity, prop))
+                .sum();
+
+        return ResponseEntity.ok(getSumValueForProp(sum, prop));
+    }
+
 
     @PostMapping("/update/{id}")
     public boolean updateActivity(@PathVariable long id,
@@ -145,6 +164,28 @@ public class ActivitiesController {
             case Swim -> { return Units.parseDistanceInMetres(value); }
         }
         throw new IllegalArgumentException("Distance shouldn't be set for " + type);
+    }
+
+    private double getValueForProp(Activity activity, String prop) {
+        switch (prop) {
+            case "time" -> { return activity.getTime(); }
+            case "regeTime" -> { return activity.getRegeTime(); }
+            case "effort" -> { return activity.getEffort(); }
+            case "tss" -> { return activity.getTss(); }
+            case "elevation" -> { return activity.getElevation(); }
+            case "distance" -> { return activity.getDistance(); }
+            default -> { return 0; }
+        }
+    }
+
+    private double getSumValueForProp(double sum, String prop) {
+        switch (prop) {
+            case "time", "regeTime" -> { return DoubleRounder.round((float)sum/60, 2); }
+            case "tss" -> { return DoubleRounder.round((float)sum, 2); }
+            case "effort", "elevation" -> { return sum; }
+            case "distance" -> { return DoubleRounder.round((float) sum/1000, 1); }
+            default -> { return 0; }
+        }
     }
 
 }

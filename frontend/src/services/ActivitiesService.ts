@@ -20,6 +20,12 @@ const updateActivity = async (id: number, type: string, prop: string, value: str
     return response.json();
 }
 
+const getWeekSummaryForProp = async (year: number, week: number, prop: string, date: string): Promise<number> => {
+    const response = await fetch(`/activities/year/${year}/week/${week}/summary/${prop}?` + new URLSearchParams({date}),
+        { method: 'GET' });
+    return response.json();
+}
+
 const deleteActivity = async (id: number): Promise<void> => {
      await fetch(`/activities/delete/${id}`, { method: 'DELETE' });
 }
@@ -28,5 +34,6 @@ export const ActivitiesService = {
     deleteActivity,
     getActivities,
     getActivitiesPerWeek,
+    getWeekSummaryForProp,
     updateActivity
 }

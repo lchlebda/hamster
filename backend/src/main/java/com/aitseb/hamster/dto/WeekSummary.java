@@ -7,8 +7,4 @@ public record WeekSummary(int weekOfYear,
                           int effort,
                           float tss,
                           int elevation,
-                          float distance) {
-    public String key() {
-        return year + "_" + weekOfYear;
-    }
-}
+                          float distance) { }

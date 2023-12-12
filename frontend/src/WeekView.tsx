@@ -43,7 +43,18 @@ const WeekView: FC = (): ReactElement => {
                     const prop = columnName as keyof typeof row;
                     const isValid = validateData(columnName, value, row)
                     if (row[prop] != value && value != '' && isValid) {
-                        ActivitiesService.updateActivity(row['id'], row['type'], columnName, value);
+                        ActivitiesService.updateActivity(row['id'], row['type'], columnName, value).then((response) => {
+                            if (['time', 'regeTime', 'effort', 'tss', 'elevation', 'distance'].includes(prop) && response) {
+                                // @ts-ignore
+                                ActivitiesService.getWeekSummaryForProp(Number(row.date.match(/[0-9]+/)[0]), row.weekOfYear, prop, row.date).then((response) => {
+                                    const sum = response;
+                                    const cell = document.getElementById(`${row.yearWeekKey}_${columnName}`);
+                                    if (cell) {
+                                        cell.innerText = String(sum);
+                                    }
+                                });
+                            }
+                        });
                     }
                     if (!isValid) {
                         // @ts-ignore
@@ -145,15 +156,15 @@ const WeekView: FC = (): ReactElement => {
                                 </tr>
                                     { row.original.weekSummary &&
                                     <tr className='table-row-week'>
-                                        <td>{ row.original.weekSummary.weekOfYear }</td>
+                                        <td>{ row.original.weekOfYear }</td>
                                         <td/><td/><td/><td/>
-                                        <td>{ row.original.weekSummary.activityHours }</td>
-                                        <td>{ row.original.weekSummary.regeHours }</td>
+                                        <td id={`${row.original.yearWeekKey}_time`}>{ row.original.weekSummary.activityHours }</td>
+                                        <td id={`${row.original.yearWeekKey}_regeTime`}>{ row.original.weekSummary.regeHours }</td>
                                         <td/><td/><td/><td/><td/>
-                                        <td>{ row.original.weekSummary.tss }</td>
-                                        <td>{ row.original.weekSummary.effort }</td>
-                                        <td>{ row.original.weekSummary.elevation }</td>
-                                        <td/><td>{ row.original.weekSummary.distance }</td><td/>
+                                        <td id={`${row.original.yearWeekKey}_tss`}>{ row.original.weekSummary.tss }</td>
+                                        <td id={`${row.original.yearWeekKey}_effort`}>{ row.original.weekSummary.effort }</td>
+                                        <td id={`${row.original.yearWeekKey}_elevation`}>{ row.original.weekSummary.elevation }</td>
+                                        <td/><td id={`${row.original.yearWeekKey}_distance`}>{ row.original.weekSummary.distance }</td><td/>
                                     </tr> }
                                 </>
                             )

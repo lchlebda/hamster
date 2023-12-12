@@ -3,6 +3,7 @@ export type Activity = {
     date: string;
     weekOfYear: number;
     dayOfWeek: string;
+    yearWeekKey: string;
     type: string;
     title: string;
     time: number;
@@ -22,6 +23,7 @@ export type Activity = {
 }
 
 export type WeekSummary = {
+    yearWeekKey: string;
     weekOfYear: number;
     activityHours: number;
     regeHours: number;
