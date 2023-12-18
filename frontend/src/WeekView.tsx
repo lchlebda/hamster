@@ -10,6 +10,7 @@ import { ActivitiesPerWeek, Activity } from './table/Types';
 import { validateData } from './table/Utils';
 import { DeleteColumn } from './table/DeleteColumn';
 import { EditableCell } from './table/EditableCell';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 const WeekView: FC = (): ReactElement => {
 
@@ -17,6 +18,13 @@ const WeekView: FC = (): ReactElement => {
         'Effort', 'Elev', 'Speed', 'Dist', 'Notes'];
     const fields = ['date', 'dayOfWeek', 'type', 'title', 'time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss',
         'effort', 'elevation', 'speed', 'distance', 'notes'];
+
+    const yearOptions: number[] = [2023, 2022, 2021];
+    const [year, setYear] = useState<number>(new Date().getFullYear());
+
+    const handleSelect = (selectedYear: string | null) => {
+        setYear(Number(selectedYear));
+    };
 
     const [activities, setActivities] = useState<Activity[]>([]);
     const [exception, setException] = useState(false);
@@ -88,8 +96,6 @@ const WeekView: FC = (): ReactElement => {
         // @ts-ignore
     } = useTable({ columns, data, defaultColumn, autoResetPage: !skipPageReset, editCell })
 
-    let year = 2023;
-
     useEffect(() => {
         setSkipPageReset(false)
     }, [data])
@@ -122,11 +128,24 @@ const WeekView: FC = (): ReactElement => {
             }
             setActivities(activitiesPerWeek);
         })
-    }, []);
+    }, [year]);
 
     return (
         <div className='App'>
-            <h1>Welcome to Activities App!</h1>
+            <div className='week-view-header'>
+                <Dropdown onSelect={ handleSelect }>
+                    <Dropdown.Toggle variant="success">YEAR</Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        {yearOptions.map((option) => (
+                            <Dropdown.Item key={option} eventKey={option}>
+                                {option}
+                            </Dropdown.Item>
+                        ))}
+                    </Dropdown.Menu>
+                </Dropdown>
+                <div className='week-view-title'>Week view for {year}</div>
+                <div className='week-view-header-empty-div'></div>
+            </div>
             <header className='App-header'>
                 { exception && <div className='strava-exception'>Strava service is currently unavailable, cannot get the most recent data.</div> }
                 <div>
