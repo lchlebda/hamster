@@ -215,3 +215,25 @@ input[type=number] {
 .week-view-header-empty-div {
   width: 100px;
 }
+
+.pagination {
+  margin-bottom: 20px;
+  margin-left: 20px;
+  color: black;
+  display: flex;
+  align-items: center;
+}
+
+.pagination button {
+  padding-right: 10px;
+  margin-right: 5px;
+  padding-left: 10px;
+}
+
+.pagination span {
+  margin-right: 5px;
+}
+
+.pagination input {
+  width: 40px;
+}
