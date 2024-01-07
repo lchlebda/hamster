@@ -62,7 +62,7 @@ public final class Units {
         if (pace.isBlank()) {
             return 0;
         }
-        if (!Pattern.compile("^[1-7]:[0-5][0-9]\\s*(/km)?\\s*$").matcher(pace).matches()) {
+        if (!Pattern.compile("^0?[1-7]:[0-5][0-9]\\s*(/km)?\\s*$").matcher(pace).matches()) {
             throw new NumberFormatException(pace + " has wrong run pace format.");
         }
 
@@ -79,13 +79,13 @@ public final class Units {
         if (kmh.isBlank()) {
             return 0;
         }
-        if (!Pattern.compile("^\\d+(\\.\\d+)?\\s*(km/h)?\\s*$").matcher(kmh).matches()) {
+        if (!Pattern.compile("^\\d+([,.]\\d+)?\\s*(km/h)?\\s*$").matcher(kmh).matches()) {
             throw new NumberFormatException(kmh + " has wrong run pace format.");
         }
-        Pattern pattern = Pattern.compile("^\\d+(\\.\\d+)?");
+        Pattern pattern = Pattern.compile("^\\d+([,.]\\d+)?");
         Matcher matcher = pattern.matcher(kmh);
         if (matcher.find()) {
-            float speed = Float.parseFloat(matcher.group(0));
+            float speed = Float.parseFloat(matcher.group(0).replace(',', '.'));
             float ms = speed*1000/3600;
 
             return new BigDecimal(ms)
@@ -120,7 +120,7 @@ public final class Units {
         if (pace.isBlank()) {
             return 0;
         }
-        if (!Pattern.compile("^[1-7]:[0-5][0-9]\\s*(/100m)?\\s*$").matcher(pace).matches()) {
+        if (!Pattern.compile("^0?[1-7]:[0-5][0-9]\\s*(/100m)?\\s*$").matcher(pace).matches()) {
             throw new NumberFormatException(pace + " has wrong swim pace format.");
         }
 
@@ -137,13 +137,13 @@ public final class Units {
         if (distance.isBlank()) {
             return 0;
         }
-        if (!Pattern.compile("^\\d+(\\.\\d+)?\\s*(km)?\\s*$").matcher(distance).matches()) {
+        if (!Pattern.compile("^\\d+([,.]\\d+)?\\s*(km)?\\s*$").matcher(distance).matches()) {
             throw new NumberFormatException(distance + " has wrong distance format.");
         }
-        Pattern pattern = Pattern.compile("^\\d+(\\.\\d+)?");
+        Pattern pattern = Pattern.compile("^\\d+([,.]\\d+)?");
         Matcher matcher = pattern.matcher(distance);
         if (matcher.find()) {
-            float distanceKm = Float.parseFloat(matcher.group(0));
+            float distanceKm = Float.parseFloat(matcher.group(0).replace(',', '.'));
 
             return (int) (distanceKm * 1000);
         }
@@ -172,7 +172,7 @@ public final class Units {
     }
 
     private static float parsePaceToMs(String pace, int factor) {
-        Pattern pattern = Pattern.compile("^[1-7]:[0-5][0-9]");
+        Pattern pattern = Pattern.compile("^0?[1-7]:[0-5][0-9]");
         Matcher matcher = pattern.matcher(pace);
         if (matcher.find()) {
             String str = matcher.group(0);

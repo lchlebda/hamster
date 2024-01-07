@@ -43,11 +43,13 @@ class UnitsTest extends Specification {
         where:
         kmh         || ms
         '18 km/h'   || 5f
-        '18'   || 5f
+        '18'        || 5f
         '16.2km/h'  || 4.5f
         '32.4'      || 9f
+        '32,4'      || 9f
         '25.8 '     || 7.166f
         '24.5 km/h' || 6.805f
+        '24,5 km/h' || 6.805f
         '32km/h'    || 8.888f
         ''          || 0f
         '   '       || 0f
@@ -62,7 +64,7 @@ class UnitsTest extends Specification {
         thrown(NumberFormatException)
 
         where:
-        kmh << ['k18', 'km/h', 'aaa', 'C20.5 km/h', '24 km/h 23', '32 22', '23.4 4', '32,4 km/h']
+        kmh << ['k18', 'km/h', 'aaa', 'C20.5 km/h', '24 km/h 23', '32 22', '23.4 4']
     }
 
     @Unroll
@@ -88,7 +90,9 @@ class UnitsTest extends Specification {
         where:
         pace        || ms
         '3:20/km'   || 5f
+        '03:20/km'  || 5f
         '4:10 /km'  || 4f
+        '04:10 /km' || 4f
         '5:00 /km ' || 3.333f
         '4:59'      || 3.344f
         '5:01'      || 3.322f
@@ -129,14 +133,16 @@ class UnitsTest extends Specification {
         Units.swimPaceToMs(pace) == ms
 
         where:
-        pace          || ms
-        '3:13/100m'   || 0.518f
-        '2:00 /100m'  || 0.833f
-        '1:59 /100m ' || 0.84f
-        '2:00 '       || 0.833f
-        '2:01'        || 0.826f
-        ''            || 0f
-        '   '         || 0f
+        pace           || ms
+        '3:13/100m'    || 0.518f
+        '2:00 /100m'   || 0.833f
+        '1:59 /100m '  || 0.84f
+        '01:59 /100m ' || 0.84f
+        '2:00 '        || 0.833f
+        '2:01'         || 0.826f
+        '02:01'        || 0.826f
+        ''             || 0f
+        '   '          || 0f
     }
 
     @Unroll
@@ -162,6 +168,7 @@ class UnitsTest extends Specification {
         '50 km'  || 50000
         '104 '   || 104000
         '4.6'    || 4600
+        '10,2 '  || 10200
         '5 km '  || 5000
         ''       || 0
         '   '    || 0
@@ -176,7 +183,7 @@ class UnitsTest extends Specification {
         thrown(NumberFormatException)
 
         where:
-        distance << ['k1200', ' 100m', 'aaa', 'd 45 km', '2k', 'km', '45.5m', '10,2 ']
+        distance << ['k1200', ' 100m', 'aaa', 'd 45 km', '2k', 'km', '45.5m']
     }
 
     @Unroll
