@@ -46,6 +46,10 @@ const App: FC = (): ReactElement => {
 
     const editCell = (rowIndex: number, columnName: string, value: string): void => {
         setSkipPageReset(true)
+        const activity = activities[rowIndex];
+        if (activity[columnName as keyof typeof activity] === value) {
+            return;
+        }
         setActivities(old =>
             old.map((row, index) => {
                 if (index === rowIndex) {

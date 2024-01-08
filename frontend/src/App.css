@@ -128,7 +128,7 @@ input[type=number] {
   border: 0;
   background: none;
   resize: vertical;
-  font-size: xx-small;
+  font-size: small;
   width: 310px;
   vertical-align: middle;
 }
@@ -139,8 +139,8 @@ input[type=number] {
   border: 0;
   background: none;
   resize: vertical;
-  font-size: small;
-  width: 195px;
+  width: 95%;
+  text-align: center;
   vertical-align: middle;
 }
 
