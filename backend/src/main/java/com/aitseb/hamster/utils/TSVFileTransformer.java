@@ -64,6 +64,8 @@ public class TSVFileTransformer {
                 if (columns.size() == 18) {
                     columns.set(16, columns.get(17));
                     columns.remove(17);
+                } else {
+                    columns.set(16, "");
                 }
 
                 String convertedLine = String.join(" | ", columns);
