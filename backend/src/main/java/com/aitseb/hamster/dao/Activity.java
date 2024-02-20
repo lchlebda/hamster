@@ -45,5 +45,7 @@ public class Activity {
     private int elevation;
     private float speed;
     private int distance;
+    
+    @Column(name="notes", length = 1000)
     private String notes;
 }

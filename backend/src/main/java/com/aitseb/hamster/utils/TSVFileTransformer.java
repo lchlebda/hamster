@@ -16,8 +16,8 @@ public class TSVFileTransformer {
 
     public static void main(String[] args) {
         String hamsterDir = System.getProperty("user.dir");
-        String inputFilePath = hamsterDir + "/backend/src/main/resources/" + "Rozpiska2022.tsv";
-        String outputFilePath = hamsterDir + "/backend/src/main/resources/" + "Rozpiska2022.csv";
+        String inputFilePath = hamsterDir + "/backend/src/main/resources/" + "Rozpiska2021.tsv";
+        String outputFilePath = hamsterDir + "/backend/src/main/resources/" + "Rozpiska2021.csv";
 
         try {
             convertTabsToPipes(inputFilePath, outputFilePath);
@@ -45,6 +45,9 @@ public class TSVFileTransformer {
                 }
                 lastActivityDate = columns.get(2);
                 StravaActivityType activityType = mapActivityTypePolishNameToStravaActivityType(columns.get(4));
+                if (!columns.get(2).startsWith("2021")) {
+                    throw new IllegalArgumentException("Wrong year in activity. Should be 2021 and not: " + columns.get(2));
+                }
                 columns.set(1, columns.get(2) + "T0" + sameDateCounter + ":00:00");
                 columns.set(2, activityType.name());
                 columns.set(3, columns.get(16));
@@ -61,11 +64,25 @@ public class TSVFileTransformer {
                 columns.set(14, columns.get(14).isEmpty() ? "0" : Float.toString(parseSpeed(activityType, columns.get(14))));
                 columns.set(15, Integer.toString(parseDistance(activityType, columns.get(15))));
 
+                if (columns.size() == 17) {
+                    columns.set(16, "");
+                }
                 if (columns.size() == 18) {
                     columns.set(16, columns.get(17));
                     columns.remove(17);
-                } else {
-                    columns.set(16, "");
+                }
+                if (columns.size() == 19) {
+                    columns.set(16, columns.get(17));
+                    columns.remove(17);
+                    columns.remove(17);
+                }
+                if (columns.size() == 20) {
+                    String[] stravaUrl = columns.get(19).split("/");
+                    columns.set(0, stravaUrl[stravaUrl.length-1]);
+                    columns.set(16, columns.get(17));
+                    columns.remove(17);
+                    columns.remove(17);
+                    columns.remove(17);
                 }
 
                 String convertedLine = String.join(" | ", columns);
