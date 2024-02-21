@@ -1,5 +1,6 @@
 export type Activity = {
     id: number;
+    stravaId: number;
     date: string;
     weekOfYear: number;
     dayOfWeek: string;

@@ -24,8 +24,14 @@ export const DeleteColumn = (setActivities: Dispatch<SetStateAction<Activity[]>>
                             )
                             ActivitiesService.deleteActivity(tableProps.row.original.id);
                             // @ts-ignore
-                            document.getElementById(`row-menu-${tableProps.row.index.toString()}`).click()
+                            document.getElementById(`row-menu-${tableProps.row.index.toString()}`).click();
                         }}>Delete</Button>{' '}
+                        <Button variant="light" size='sm' onClick={(e: BaseSyntheticEvent) => {
+                            // @ts-ignore
+                            document.getElementById(`row-menu-${tableProps.row.index.toString()}`).click();
+                            // @ts-ignore
+                            window.open("https://www.strava.com/activities/" + tableProps.row.original.stravaId, "_blank");
+                        }}>Strava</Button>{' '}
                     </Popover.Body>
                 </Popover>
             }>
