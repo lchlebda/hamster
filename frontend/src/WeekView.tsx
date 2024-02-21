@@ -132,7 +132,7 @@ const WeekView: FC = (): ReactElement => {
 
     return (
         <div className='App'>
-            <div className='week-view-header'>
+            <div className='main-header'>
                 <Dropdown onSelect={ handleSelect }>
                     <Dropdown.Toggle variant="success">YEAR</Dropdown.Toggle>
                     <Dropdown.Menu>
@@ -143,7 +143,7 @@ const WeekView: FC = (): ReactElement => {
                         ))}
                     </Dropdown.Menu>
                 </Dropdown>
-                <div className='week-view-title'>Week view for {year}</div>
+                <div className='main-title'>Week view for {year}</div>
                 <div className='week-view-header-empty-div'></div>
             </div>
             <header className='App-header'>

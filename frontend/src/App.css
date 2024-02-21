@@ -43,6 +43,10 @@ input[type=number] {
   color: #61dafb;
 }
 
+.menu a {
+  margin-right: 20px;
+}
+
 .table {
   margin-left: auto;
   margin-right: auto;
@@ -201,19 +205,23 @@ input[type=number] {
   text-align: center;
 }
 
-.week-view-header {
+.main-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-left: 20px;
 }
 
-.week-view-title {
+.main-title {
   font-size: xxx-large;
 }
 
 .week-view-header-empty-div {
   width: 100px;
+}
+
+.activities-header-empty-div {
+  width: 170px;
 }
 
 .pagination {

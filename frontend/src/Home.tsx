@@ -1,7 +1,7 @@
 import { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import './App.css';
 import { useAuth } from './authorization/AuthProvider';
-import { ActivitiesService } from './services';
+import { ActivitiesService, StravaService } from './services';
 import {
     Column,
     useTable,
@@ -26,6 +26,7 @@ const App: FC = (): ReactElement => {
 
     const [activities, setActivities] = useState<Activity[]>([]);
     const [exception, setException] = useState(false);
+    const [stravaUpdateIdsException, setStravaUpdateIdsException] = useState(false);
     const [skipPageReset, setSkipPageReset] = useState(false);
     const [filterOn, setFilterOn] = useState<Map<string, boolean>>(filterOnInit);
     const auth = useAuth();
@@ -118,9 +119,21 @@ const App: FC = (): ReactElement => {
 
     return (
         <div className='App'>
-            <h1>Welcome to Activities App!</h1>
+            <div className='main-header'>
+                <Button variant="light" onClick={() =>
+                  StravaService.updateStravaIds(auth.token).then((response) => {
+                      if (response.status === 500) {
+                          setStravaUpdateIdsException(true);
+                      }
+                  })}>
+                    Update Strava ids
+                </Button>
+                <div className='main-title'>Welcome to Activities App!</div>
+                <div className='activities-header-empty-div'></div>
+            </div>
             <header className='App-header'>
                 { exception && <div className='strava-exception'>Strava service is currently unavailable, cannot get the most recent data.</div> }
+                { stravaUpdateIdsException && <div className='strava-exception'>Sth is wrong with updating Strava ids into your database file.</div> }
                 <div>
                     <table {...getTableProps()} className='table'>
                         <thead>

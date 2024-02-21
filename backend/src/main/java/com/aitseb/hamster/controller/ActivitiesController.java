@@ -84,7 +84,7 @@ public class ActivitiesController {
                 : ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(weekViewDTO);
     }
 
-        @GetMapping("/year/{year}/week/{week}/summary/{prop}")
+    @GetMapping("/year/{year}/week/{week}/summary/{prop}")
     public ResponseEntity<Double> getWeekSummaryForProp(
             @PathVariable String prop,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
@@ -98,7 +98,6 @@ public class ActivitiesController {
 
         return ResponseEntity.ok(getSumValueForProp(sum, prop));
     }
-
 
     @PostMapping("/update/{id}")
     public boolean updateActivity(@PathVariable long id,
