@@ -55,7 +55,7 @@ class ActivitiesControllerTest extends Specification {
 
         activitiesRepository.findFirstByOrderByDateDesc() >> activity2
         //noinspection GroovyAssignabilityCheck
-        stravaActivitiesRepository.getList(ACCESS_TOKEN, timestamp) >> [stravaActivity2, stravaActivity3, stravaActivity4]
+        stravaActivitiesRepository.getListAfter(ACCESS_TOKEN, timestamp) >> [stravaActivity2, stravaActivity3, stravaActivity4]
         activitiesRepository.findAll() >> [activity1, activity2, activity3, activity4]
 
         when:
@@ -82,7 +82,7 @@ class ActivitiesControllerTest extends Specification {
 
         activitiesRepository.findFirstByOrderByDateDesc() >> activity1
         //noinspection GroovyAssignabilityCheck
-        stravaActivitiesRepository.getList(ACCESS_TOKEN, timestamp) >> { throw new StravaException('') }
+        stravaActivitiesRepository.getListAfter(ACCESS_TOKEN, timestamp) >> { throw new StravaException('') }
         activitiesRepository.findAll() >> [activity1]
 
         when:

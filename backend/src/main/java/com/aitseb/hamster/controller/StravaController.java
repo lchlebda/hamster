@@ -1,5 +1,7 @@
 package com.aitseb.hamster.controller;
 
+import com.aitseb.hamster.dto.StravaActivity;
+import com.aitseb.hamster.repository.StravaActivitiesRepository;
 import com.aitseb.hamster.service.StravaAuthorizationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -7,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +21,7 @@ import java.util.List;
 public class StravaController {
 
     private final StravaAuthorizationService stravaAuthorizationService;
+    private final StravaActivitiesRepository stravaActivitiesRepository;
 
     @GetMapping("/strava/oauth")
     public String getToken(@RequestParam String clientId,
@@ -35,9 +40,30 @@ public class StravaController {
              BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                List<String> columns = new ArrayList<>(Arrays.asList(line.split("\\|", 2)));
+                List<String> columns = new ArrayList<>(Arrays.asList(line.split("\\|", 4)));
                 if (columns.get(0).trim().equals("0")) {
-                    columns.set(0, "88888888" + " ");
+                    String date = columns.get(1).trim();
+                    long after = Timestamp.valueOf(LocalDateTime.parse(date)).getTime()/1000;
+                    long before = after + 86400; // add one day
+                    List<StravaActivity> activities = stravaActivitiesRepository.getListBetween(accessToken, after, before);
+
+                    String stravaId = "0";
+                    if (activities.size() == 1) {
+                        stravaId = Long.toString(activities.get(0).id());
+                    }
+                    if (activities.size() > 1) {
+                        String activityType = columns.get(2).trim();
+                        if (activities.get(0).type().name().equals(activityType)) {
+                            stravaId = Long.toString(activities.get(0).id());
+                        }
+                        if (activities.get(1).type().name().equals(activityType)) {
+                            stravaId = Long.toString(activities.get(1).id());
+                        }
+                        if (activities.size() > 2 && activities.get(2).type().name().equals(activityType)) {
+                            stravaId = Long.toString(activities.get(2).id());
+                        }
+                    }
+                    columns.set(0, stravaId + " ");
                 }
                 String convertedLine = String.join("|", columns);
                 writer.write(convertedLine);

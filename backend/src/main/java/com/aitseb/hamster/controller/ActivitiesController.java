@@ -138,7 +138,7 @@ public class ActivitiesController {
         Activity activity = activitiesRepository.findFirstByOrderByDateDesc();
         long timestamp = Timestamp.valueOf(activity.getDate()).getTime()/1000;
 
-        List<StravaActivity> activities = stravaActivitiesRepository.getList(accessToken, timestamp);
+        List<StravaActivity> activities = stravaActivitiesRepository.getListAfter(accessToken, timestamp);
         activities.stream()
                 .filter(stravaActivity -> stravaActivity.id() != activity.getStravaId())
                 .forEach(this::saveActivity);

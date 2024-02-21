@@ -17,15 +17,16 @@ import static java.util.Collections.emptyList;
 @RequiredArgsConstructor
 public class StravaActivitiesRepository {
 
-    private static final String ATHLETE_ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities?after={after}";
+    private static final String ATHLETE_ACTIVITIES_URL_AFTER = "https://www.strava.com/api/v3/athlete/activities?after={after}";
+    private static final String ATHLETE_ACTIVITIES_URL_BETWEEN = "https://www.strava.com/api/v3/athlete/activities?after={after}&before={before}";
     private static final String HEARTRATE_STREAM_URL = "http://www.strava.com/api/v3/activities/7817317716/streams?keys=heartrate";
     private final RestTemplate restTemplate;
 
-    public List<StravaActivity> getList(String accessToken, long after) {
+    public List<StravaActivity> getListAfter(String accessToken, long after) {
         HttpEntity<Object> requestEntity = getRequestEntityWithHeaders(accessToken);
         try {
             ResponseEntity<StravaActivity[]> list = restTemplate.exchange(
-                    ATHLETE_ACTIVITIES_URL,
+                    ATHLETE_ACTIVITIES_URL_AFTER,
                     HttpMethod.GET,
                     requestEntity,
                     StravaActivity[].class,
@@ -34,7 +35,25 @@ public class StravaActivitiesRepository {
 
         } catch (Exception exc) {
             exc.printStackTrace();
-            throw new StravaException("endpoint " + ATHLETE_ACTIVITIES_URL + " failed with exception: " + exc.getMessage());
+            throw new StravaException("endpoint " + ATHLETE_ACTIVITIES_URL_AFTER + " failed with exception: " + exc.getMessage());
+        }
+    }
+
+    public List<StravaActivity> getListBetween(String accessToken, long after, long before) {
+        HttpEntity<Object> requestEntity = getRequestEntityWithHeaders(accessToken);
+        try {
+            ResponseEntity<StravaActivity[]> list = restTemplate.exchange(
+                    ATHLETE_ACTIVITIES_URL_BETWEEN,
+                    HttpMethod.GET,
+                    requestEntity,
+                    StravaActivity[].class,
+                    after,
+                    before);
+            return list.getBody() != null ? asList(list.getBody()) : emptyList();
+
+        } catch (Exception exc) {
+            exc.printStackTrace();
+            throw new StravaException("endpoint " + ATHLETE_ACTIVITIES_URL_BETWEEN + " failed with exception: " + exc.getMessage());
         }
     }
 
