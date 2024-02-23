@@ -19,7 +19,7 @@ const WeekView: FC = (): ReactElement => {
     const fields = ['date', 'dayOfWeek', 'type', 'title', 'time', 'regeTime', 'hr', 'hrMax', 'cadence', 'power', 'ef', 'tss',
         'effort', 'elevation', 'speed', 'distance', 'notes'];
 
-    const yearOptions: number[] = [2023, 2022, 2021];
+    const yearOptions: number[] = [2024, 2023, 2022, 2021, 2020, 2019];
     const [year, setYear] = useState<number>(new Date().getFullYear());
 
     const handleSelect = (selectedYear: string | null) => {

@@ -16,8 +16,8 @@ public class TSVFileTransformer {
 
     public static void main(String[] args) {
         String hamsterDir = System.getProperty("user.dir");
-        String inputFilePath = hamsterDir + "/backend/src/main/resources/" + "Rozpiska2021.tsv";
-        String outputFilePath = hamsterDir + "/backend/src/main/resources/" + "Rozpiska2021.csv";
+        String inputFilePath = hamsterDir + "/backend/src/main/resources/" + "Rozpiska2020.tsv";
+        String outputFilePath = hamsterDir + "/backend/src/main/resources/" + "Rozpiska2020.csv";
 
         try {
             convertTabsToPipes(inputFilePath, outputFilePath);
@@ -45,8 +45,8 @@ public class TSVFileTransformer {
                 }
                 lastActivityDate = columns.get(2);
                 StravaActivityType activityType = mapActivityTypePolishNameToStravaActivityType(columns.get(4));
-                if (!columns.get(2).startsWith("2021")) {
-                    throw new IllegalArgumentException("Wrong year in activity. Should be 2021 and not: " + columns.get(2));
+                if (!columns.get(2).startsWith("2020")) {
+                    throw new IllegalArgumentException("Wrong year in activity. Should be 2020 and not: " + columns.get(2));
                 }
                 columns.set(1, columns.get(2) + "T0" + sameDateCounter + ":00:00");
                 columns.set(2, activityType.name());

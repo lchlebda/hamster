@@ -34,8 +34,8 @@ public class StravaController {
     @PostMapping("/updateStravaIds")
     public ResponseEntity<Boolean> updateStravaIds(@RequestHeader(name = "ACCESS_TOKEN") String accessToken) {
         String hamsterDir = System.getProperty("user.dir");
-        String inputFilePath = hamsterDir + "/backend/src/main/resources/" + "data_output1.csv";
-        String outputFilePath = hamsterDir + "/backend/src/main/resources/" + "data_output.csv";
+        String inputFilePath = hamsterDir + "/backend/src/main/resources/" + "data_output.csv";
+        String outputFilePath = hamsterDir + "/backend/src/main/resources/" + "data_output1.csv";
 
         try (BufferedReader reader = new BufferedReader(new FileReader(inputFilePath));
              BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
