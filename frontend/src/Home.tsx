@@ -133,7 +133,7 @@ const App: FC = (): ReactElement => {
             </div>
             <header className='App-header'>
                 { exception && <div className='strava-exception'>Strava service is currently unavailable, cannot get the most recent data.</div> }
-                { stravaUpdateIdsException && <div className='strava-exception'>Sth is wrong with updating Strava ids into your database file.</div> }
+                { stravaUpdateIdsException && <div className='strava-exception'>Something is wrong with updating Strava ids into your database file.</div> }
                 <div>
                     <table {...getTableProps()} className='table'>
                         <thead>
