@@ -7,6 +7,16 @@ const updateStravaIds = async (token: string): Promise<Response> => {
   });
 }
 
+const updateActivitiesFromStrava = async (token: string): Promise<Response> => {
+  return await fetch('/updateActivitiesFromStrava', {
+    headers: {
+      'ACCESS_TOKEN': token,
+    },
+    method: 'POST'
+  });
+}
+
 export const StravaService = {
-  updateStravaIds
+  updateStravaIds,
+  updateActivitiesFromStrava
 }

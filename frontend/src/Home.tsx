@@ -128,12 +128,20 @@ const App: FC = (): ReactElement => {
                   })}>
                     Update Strava ids
                 </Button>
+                {/*<Button variant="light" onClick={() =>*/}
+                {/*  StravaService.updateActivitiesFromStrava(auth.token).then((response) => {*/}
+                {/*      if (response.status === 500) {*/}
+                {/*          setStravaUpdateIdsException(true);*/}
+                {/*      }*/}
+                {/*  })}>*/}
+                {/*    Update Strava ids*/}
+                {/*</Button>*/}
                 <div className='main-title'>Welcome to Activities App!</div>
                 <div className='activities-header-empty-div'></div>
             </div>
             <header className='App-header'>
                 { exception && <div className='strava-exception'>Strava service is currently unavailable, cannot get the most recent data.</div> }
-                { stravaUpdateIdsException && <div className='strava-exception'>Something is wrong with updating Strava ids into your database file.</div> }
+                { stravaUpdateIdsException && <div className='strava-exception'>Something is wrong with updating Strava ids or activities into your database file.</div> }
                 <div>
                     <table {...getTableProps()} className='table'>
                         <thead>
